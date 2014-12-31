@@ -1,0 +1,7 @@
+AR=ar
+RANLIB=ranlib
+CC=mpiicc
+CFLAGS=-O2 -std=gnu99 -I$(HOME)/build/tmLQCD/include -openmp
+LDFLAGS=-L$(HOME)/build/tmLQCD/lib -L$(HOME)/loc-install/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -mkl -lm -llemon -llime -openmp
+

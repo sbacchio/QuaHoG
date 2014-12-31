@@ -1,0 +1,5 @@
+Makefile.in
+mainprogs/main
+*.a
+*.o
+*.d
