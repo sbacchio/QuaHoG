@@ -23,7 +23,7 @@ int
 main(int argc, char *argv[])
 {
   int dims[] = {24,12,12,12};
-  int n_ape = 50;
+  int n_ape = 5;
   double alpha_ape = 0.5;
   int n_gauss = 50;
   double alpha_gauss = 4.0;
@@ -65,7 +65,8 @@ main(int argc, char *argv[])
   double p_ape = qhg_plaquette(gf_ape);
   if(am_io_proc)
     printf("Plaquette = %10.8f\n", p_ape);
- 
+  MPI_Finalize();
+  return 0;
   /*
     Source and solution spinor field
    */

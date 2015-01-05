@@ -3,6 +3,7 @@
 #include <qhg_defs.h>
 #include <qhg_types.h>
 #include <qhg_correlator.h>
+#include <qhg_prop_ops.h>
 
 #define NCHANNELS 2 /* +/- charged pions */
 #define VC(v, c) ((v)*NCHANNELS + (c))
@@ -15,16 +16,23 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
   qhg_correlator corr = qhg_correlator_init(NCHANNELS, lat);
   int lvol = lat->lvol;
   for(int v=0; v<lvol; v++) {
+    _Complex double U[NS*NC][NS*NC];
+    _Complex double D[NS*NC][NS*NC];    
+    _Complex double C[NS*NC][NS*NC];    
     corr.C[VC(v, 0)] = 0.;
     corr.C[VC(v, 1)] = 0.;    
     for(int cs0=0; cs0<NS*NC; cs0++)
       for(int cs1=0; cs1<NS*NC; cs1++) {
-	_Complex double u = sp_u[cs0].field[VSC(v, cs1)];
-	_Complex double d = sp_d[cs0].field[VSC(v, cs1)];	
-	corr.C[VC(v, 0)] += creal(u)*creal(u) + cimag(u)*cimag(u);
-	corr.C[VC(v, 1)] += creal(d)*creal(d) + cimag(d)*cimag(d);	
+	U[cs0][cs1] = sp_u[cs0].field[VSC(v, cs1)];
+	D[cs0][cs1] = sp_d[cs0].field[VSC(v, cs1)];	
       }
+    prop_mul_gd(C, U, U);
+    corr.C[VC(v, 0)] = prop_trace(C);
+
+    prop_mul_gd(C, D, D);    
+    corr.C[VC(v, 1)] = prop_trace(C);
   }
+  
   for(int i=0; i<ND; i++)
     corr.origin[i] = source_coords[i];
   corr.mom_list = NULL;
