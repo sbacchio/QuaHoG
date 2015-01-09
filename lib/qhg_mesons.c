@@ -19,12 +19,10 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     _Complex double U[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];    
     _Complex double C[NS*NC][NS*NC];    
-    corr.C[VC(v, 0)] = 0.;
-    corr.C[VC(v, 1)] = 0.;    
     for(int cs0=0; cs0<NS*NC; cs0++)
       for(int cs1=0; cs1<NS*NC; cs1++) {
-	U[cs0][cs1] = sp_u[cs0].field[VSC(v, cs1)];
-	D[cs0][cs1] = sp_d[cs0].field[VSC(v, cs1)];	
+	U[cs0][cs1] = sp_u[cs1].field[VSC(v, cs0)];
+	D[cs0][cs1] = sp_d[cs1].field[VSC(v, cs0)];	
       }
     prop_mul_gd(C, U, U);
     corr.C[VC(v, 0)] = prop_trace(C);
