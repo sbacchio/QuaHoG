@@ -32,6 +32,8 @@ SOURCES=\
 	qhg_ape_smear		\
 	qhg_su3_project		\
 	qhg_gauss_smear		\
+	qhg_io_utils		\
+	qhg_spinor_field_io	\
 	qhg_ft
 
 include $(wildcard *.d)

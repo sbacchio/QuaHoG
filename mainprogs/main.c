@@ -6,24 +6,11 @@
 #include <complex.h>
 #include <qhg.h>
 
-void
-dbyte_swap(unsigned char *R,int N)
-{
-  for(int i=0;i<N;i++) {
-    char swap;
-    swap = *(R + i*8    ); *(R + i*8    ) = *(R + i*8 + 7);  *(R + i*8 + 7) = swap;
-    swap = *(R + i*8 + 1); *(R + i*8 + 1) = *(R + i*8 + 6);  *(R + i*8 + 6) = swap;
-    swap = *(R + i*8 + 2); *(R + i*8 + 2) = *(R + i*8 + 5);  *(R + i*8 + 5) = swap;
-    swap = *(R + i*8 + 3); *(R + i*8 + 3) = *(R + i*8 + 4);  *(R + i*8 + 4) = swap;
-  }
-  return;
-}
-
 int
 main(int argc, char *argv[])
 {
   int dims[] = {24,12,12,12};
-  int n_ape = 5;
+  int n_ape = 50;
   double alpha_ape = 0.5;
   int n_gauss = 50;
   double alpha_gauss = 4.0;
@@ -65,8 +52,8 @@ main(int argc, char *argv[])
   double p_ape = qhg_plaquette(gf_ape);
   if(am_io_proc)
     printf("Plaquette = %10.8f\n", p_ape);
-  MPI_Finalize();
-  return 0;
+
+  
   /*
     Source and solution spinor field
    */
@@ -74,11 +61,17 @@ main(int argc, char *argv[])
   qhg_spinor_field sol_u[NS*NC], sol_d[NS*NC];
   for(int sp=0; sp<NS; sp++)
     for(int co=0; co<NC; co++) {
-      qhg_spinor_field aux = qhg_spinor_field_init(lat);
       sol_u[CS(sp,co)] = qhg_spinor_field_init(lat);
       sol_d[CS(sp,co)] = qhg_spinor_field_init(lat);
-      src[CS(sp,co)] = qhg_spinor_field_init(lat);
+    }
+
+  goto READ;
+    
+  for(int sp=0; sp<NS; sp++)
+    for(int co=0; co<NC; co++) {
+      qhg_spinor_field aux = qhg_spinor_field_init(lat);
       qhg_point_spinor_field(aux, source_coords, sp, co);
+      src[CS(sp,co)] = qhg_spinor_field_init(lat);
       qhg_gauss_smear(src[CS(sp,co)], aux, gf_ape, alpha_gauss, n_gauss);
       qhg_spinor_field_finalize(aux);
     }
@@ -102,6 +95,20 @@ main(int argc, char *argv[])
   		  (double *) src[i].field,
   		  op, write_prop);
   
+  qhg_write_spinors("prop.up", 12, sol_u);
+  qhg_write_spinors("prop.dn", 12, sol_d);  
+
+  for(int i=0; i<NS*NC; i++)
+    qhg_spinor_field_finalize(src[i]);
+
+  
+  MPI_Finalize();
+  return 0;
+
+READ:
+  qhg_read_spinors(sol_u, 12, "prop.up");
+  qhg_read_spinors(sol_d, 12, "prop.dn");   
+  
   qhg_correlator mesons = qhg_mesons(sol_u, sol_d, source_coords);
   int max_mom_sq = 4;
   qhg_mom_list mom_list = qhg_mom_list_init(max_mom_sq);
@@ -120,6 +127,12 @@ main(int argc, char *argv[])
   qhg_correlator mesons_sm_ft = qhg_ft(mesons_sm, &mom_list, "fwd");
    
   { /* Print the two-point function */
+    char fname[] = "mesons.dat";
+    int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
+    FILE *fp = NULL;
+    if(am_io_proc)
+      fp = fopen(fname, "w");
+    
     int site_size = mesons_ft.site_size;
     int nm = mesons_ft.mom_list->n_mom_vecs;    
     int (*mv)[3] = mesons_ft.mom_list->mom_vecs;
@@ -151,26 +164,27 @@ main(int argc, char *argv[])
 
 	int lv = IDX(lx, ld);
 	int proc = IDX(px, pd);
-	if(lat->comms->proc_id == proc)
-	  printf(" %2d %+d %+d %+d   %+e %+e   %+e %+e LS\n",
-		 tt, k[0], k[1], k[2],
-		 creal(mesons_ft.C[lv*site_size + 0]),
-		 cimag(mesons_ft.C[lv*site_size + 0]),
-		 creal(mesons_ft.C[lv*site_size + 1]),
-		 cimag(mesons_ft.C[lv*site_size + 1])
-		 );
-	if(lat->comms->proc_id == proc)
-	  printf(" %2d %+d %+d %+d   %+e %+e   %+e %+e SS\n",
-		 tt, k[0], k[1], k[2],
-		 creal(mesons_sm_ft.C[lv*site_size + 0]),
-		 cimag(mesons_sm_ft.C[lv*site_size + 0]),
-		 creal(mesons_sm_ft.C[lv*site_size + 1]),
-		 cimag(mesons_sm_ft.C[lv*site_size + 1])
-		 );
-	fflush(stdout);
+	if(am_io_proc)
+	  fprintf(fp, " %2d %+d %+d %+d   %+e %+e   %+e %+e LS\n",
+		  tt, k[0], k[1], k[2],
+		  creal(mesons_ft.C[lv*site_size + 0]),
+		  cimag(mesons_ft.C[lv*site_size + 0]),
+		  creal(mesons_ft.C[lv*site_size + 1]),
+		  cimag(mesons_ft.C[lv*site_size + 1])
+		  );
+	if(am_io_proc)
+	  fprintf(fp, " %2d %+d %+d %+d   %+e %+e   %+e %+e SS\n",
+		  tt, k[0], k[1], k[2],
+		  creal(mesons_sm_ft.C[lv*site_size + 0]),
+		  cimag(mesons_sm_ft.C[lv*site_size + 0]),
+		  creal(mesons_sm_ft.C[lv*site_size + 1]),
+		  cimag(mesons_sm_ft.C[lv*site_size + 1])
+		  );
 	MPI_Barrier(lat->comms->comm);
       }
     }
+    if(am_io_proc)
+      fclose(fp);
   }
   /*
     Destroy momentum list
@@ -189,7 +203,6 @@ main(int argc, char *argv[])
      Destroy spinor- and gauge-fields
   */
   for(int i=0; i<NS*NC; i++) {
-    qhg_spinor_field_finalize(src[i]);
     qhg_spinor_field_finalize(sol_u[i]);
     qhg_spinor_field_finalize(sol_d[i]);
     qhg_spinor_field_finalize(sol_sm_u[i]);
