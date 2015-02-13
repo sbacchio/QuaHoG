@@ -19,7 +19,9 @@
 #include <qhg_gauss_smear.h>
 #include <qhg_mom_list.h>
 #include <qhg_mesons.h>
+#include <qhg_nucleons.h>
 #include <qhg_spinor_field_io.h>
+#include <qhg_spinor_field_bc.h>
 #include <qhg_ft.h>
 
 #endif /* _QHG_H */
