@@ -51,6 +51,9 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
       _Complex double (*P[2])[NC*NS] = {U, D};
       for(int iflav=0; iflav<NFLAVS; iflav++) {
+	/*
+	 * Sign flips are for consistency with libqcd
+	 */
 	switch(igamma) {
 	case 0: /* 1 */
 	  prop_mul_gd(C, P[iflav], P[iflav]);
@@ -60,25 +63,25 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 	  prop_g5_G(W, P[iflav]);
 	  prop_G_g5(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 2: /* gx */
 	  prop_gx_G(W, P[iflav]);
 	  prop_G_gx(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 3: /* gy */
 	  prop_gy_G(W, P[iflav]);
 	  prop_G_gy(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 4: /* gz */
 	  prop_gz_G(W, P[iflav]);
 	  prop_G_gz(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 5: /* gt */
 	  prop_gt_G(W, P[iflav]);
@@ -90,19 +93,19 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 	  prop_g5gx_G(W, P[iflav]);
 	  prop_G_g5gx(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 7: /* g5gy */
 	  prop_g5gy_G(W, P[iflav]);
 	  prop_G_g5gy(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 8: /* g5gz */
 	  prop_g5gz_G(W, P[iflav]);
 	  prop_G_g5gz(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 9: /* g5gt */
 	  prop_g5gt_G(W, P[iflav]);
