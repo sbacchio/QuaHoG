@@ -82,9 +82,9 @@ qhg_ft(qhg_correlator corr_x, qhg_mom_list *mom_list, char direction[])
 	  int yy = pcoords[2]*ly + y;
 	  int zz = pcoords[3]*lz + z;
 	  double ph =
-	    (double)(xx-x0)*k[0]/Lx +
-	    (double)(yy-y0)*k[1]/Ly +
-	    (double)(zz-z0)*k[2]/Lz;
+	    (double)(Lx + xx - x0)*k[0]/Lx +
+	    (double)(Ly + yy - y0)*k[1]/Ly +
+	    (double)(Lz + zz - z0)*k[2]/Lz;
 	  ph = ph*2*M_PI;
 	  _Complex double ex = cos(ph) + sign * _Complex_I * sin(ph);
 	  for(int t=0; t<lt; t++) {
