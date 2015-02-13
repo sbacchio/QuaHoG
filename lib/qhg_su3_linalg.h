@@ -57,6 +57,18 @@ su3_linalg_upeqv(_Complex double *u, _Complex double *v)
 }
 
 /*
+ * u = u - v, with u, v 3x3
+ */
+static void
+su3_linalg_umeqv(_Complex double *u, _Complex double *v)
+{
+  for(int i=0; i<NC*NC; i++)
+    u[i] = u[i] - v[i];
+
+  return;
+}
+
+/*
  * u_ij = 0 i,j = 1,..,3
  */
 static void
@@ -105,7 +117,7 @@ su3_linalg_det_u(_Complex double *u)
   _Complex double det = 0;
   det +=  u[CC(0,0)]*(u[CC(1,1)]*u[CC(2,2)] - u[CC(1,2)]*u[CC(2,1)]);
   det += -u[CC(0,1)]*(u[CC(1,0)]*u[CC(2,2)] - u[CC(1,2)]*u[CC(2,0)]);
-  det +=  u[CC(0,2)]*(u[CC(1,0)]*u[CC(2,1)] - u[CC(1,1)]*u[CC(2,1)]);  
+  det +=  u[CC(0,2)]*(u[CC(1,0)]*u[CC(2,1)] - u[CC(1,1)]*u[CC(2,0)]);  
   return det;
 }
 
