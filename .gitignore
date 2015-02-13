@@ -4,3 +4,5 @@ mainprogs/main
 *.a
 *.o
 *.d
+*.pyc
+__pycache__

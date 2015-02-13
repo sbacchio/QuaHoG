@@ -1,0 +1,352 @@
+
+../lib/qhg.h,21
+#define _QHG_H 2,15
+
+../lib/qhg_alloc.c,16
+qhg_alloc(8,93
+
+../lib/qhg_alloc.h,27
+#define _QHG_ALLOC_H 2,21
+
+../lib/qhg_ape_smear.c,74
+#define G(11,207
+qhg_ape_smear_3d_iter(14,251
+qhg_ape_smear_3d(78,1883
+
+../lib/qhg_ape_smear.h,29
+#define _QHG_APE_SMEAR 2,23
+
+../lib/qhg_comms.c,50
+qhg_comms_init(9,141
+qhg_comms_finalize(66,1552
+
+../lib/qhg_comms.h,27
+#define _QHG_COMMS_H 2,21
+
+../lib/qhg_correlator.c,59
+qhg_correlator_init(8,105
+qhg_correlator_finalize(20,406
+
+../lib/qhg_correlator.h,32
+#define _QHG_CORRELATOR_H 2,26
+
+../lib/qhg_defs.h,81
+#define _QHG_DEFS_H 2,20
+#define NC 8,108
+#define NS 9,121
+#define ND 10,134
+
+../lib/qhg_ft.c,35
+get_ft_sign(15,251
+qhg_ft(33,671
+
+../lib/qhg_ft.h,24
+#define _QHG_FT_H 2,18
+
+../lib/qhg_gauge_field.c,109
+#define D(7,90
+qhg_gauge_field_init(10,148
+qhg_gauge_field_finalize(53,1136
+qhg_gauge_field_copy(63,1294
+
+../lib/qhg_gauge_field.h,33
+#define _QHG_GAUGE_FIELD_H 2,27
+
+../lib/qhg_gauss_smear.c,90
+#define G(11,218
+#define S(12,256
+qhg_gauss_smear_iter(14,286
+qhg_gauss_smear(53,1215
+
+../lib/qhg_gauss_smear.h,31
+#define _QHG_GAUSS_SMEAR 2,25
+
+../lib/qhg_idx.h,102
+#define _QHG_IDX_H 2,19
+#define CS(11,158
+#define CC(16,238
+#define CO(23,453
+#define IDX(32,715
+
+../lib/qhg_import_gauge_field.c,31
+qhg_import_gauge_field(10,133
+
+../lib/qhg_import_gauge_field.h,40
+#define _QHG_IMPORT_GAUGE_FIELD_H 2,34
+
+../lib/qhg_io_utils.c,116
+qhg_is_bigendian(4,24
+    char c[c7,55
+    int  i;8,70
+qhg_byte_swap_float(23,222
+qhg_byte_swap_double(36,497
+
+../lib/qhg_io_utils.h,30
+#define _QHG_IO_UTILS_H 2,24
+
+../lib/qhg_lattice.c,73
+#define D(9,133
+qhg_lattice_init(12,189
+qhg_lattice_finalize(207,5310
+
+../lib/qhg_lattice.h,29
+#define _QHG_LATTICE_H 2,23
+
+../lib/qhg_mesons.c,241
+#define NGAMMAS 14,254
+#define NFLAVS 15,310
+#define NCHANNELS 16,343
+#define VGF(17,382
+#define VSC(18,438
+static char gamma_tags[gamma_tags20,477
+static char flav_tags[flav_tags31,684
+qhg_mesons(35,765
+qhg_write_mesons(125,3270
+
+../lib/qhg_mesons.h,28
+#define _QHG_MESONS_H 2,22
+
+../lib/qhg_mom_list.c,55
+qhg_mom_list_init(7,80
+qhg_mom_list_finalize(56,1283
+
+../lib/qhg_mom_list.h,30
+#define _QHG_MOM_LIST_H 2,24
+
+../lib/qhg_nucleons.c,263
+#define NFLAV 14,254
+#define NCOMP 15,270
+#define NCHAN 16,288
+#define SITE_SIZE 17,306
+#define NIDX(18,350
+#define VSC(19,438
+static char flav_tags[flav_tags21,473
+static char chan_tags[chan_tags24,539
+qhg_nucleons(31,657
+qhg_write_nucleons(187,4930
+
+../lib/qhg_nucleons.h,30
+#define _QHG_NUCLEONS_H 2,24
+
+../lib/qhg_plaquette.c,128
+#define G(10,166
+plaquette_00(13,219
+plaquette_01(37,797
+plaquette_10(62,1412
+plaquette_11(87,2027
+qhg_plaquette(112,2640
+
+../lib/qhg_plaquette.h,29
+#define _QHG_PLAQUETTE 2,23
+
+../lib/qhg_point_spinor_field.c,31
+qhg_point_spinor_field(11,154
+
+../lib/qhg_point_spinor_field.h,40
+#define _QHG_POINT_SPINOR_FIELD_H 2,34
+
+../lib/qhg_prop_contract.h,207
+#define _QHG_PROP_CONTRACT_H 2,29
+prop_contract_01(8,185
+prop_contract_02(882,54153
+prop_contract_03(1756,108121
+prop_contract_12(2630,162089
+prop_contract_13(3504,216057
+prop_contract_23(4378,270025
+
+../lib/qhg_prop_gammas.h,711
+#define _QHG_PROP_GAMMAS_H 2,27
+prop_gx_G(6,115
+prop_G_gx(166,4746
+prop_gy_G(326,9371
+prop_G_gy(486,13714
+prop_gz_G(646,18051
+prop_G_gz(806,22682
+prop_gt_G(966,27307
+prop_G_gt(1126,31650
+prop_g5_G(1286,35987
+prop_G_g5(1446,40330
+prop_g5gx_G(1606,44675
+prop_G_g5gx(1766,49316
+prop_g5gy_G(1926,53951
+prop_G_g5gy(2086,58304
+prop_g5gz_G(2246,62651
+prop_G_g5gz(2406,67292
+prop_g5gt_G(2566,71927
+prop_G_g5gt(2726,76280
+prop_C_G(2886,80612
+prop_G_C(3046,84947
+prop_Cg5_G(3206,89284
+prop_G_Cg5(3366,93629
+prop_Cgx_G(3526,97968
+prop_G_Cgx(3686,102601
+prop_Cgy_G(3846,107228
+prop_G_Cgy(4006,111573
+prop_Cgz_G(4166,115912
+prop_G_Cgz(4326,120545
+prop_Cgt_G(4486,125172
+prop_G_Cgt(4646,129517
+
+../lib/qhg_prop_mul.h,109
+#define _QHG_PROP_MUL_H 2,24
+prop_mul_gg(6,84
+prop_mul_gd(18,405
+prop_mul_dg(30,732
+prop_mul_dd(42,1059
+
+../lib/qhg_prop_ops.h,30
+#define _QHG_PROP_OPS_H 2,24
+
+../lib/qhg_prop_trace.h,49
+#define _QHG_PROP_TRACE_H 2,26
+prop_trace(5,78
+
+../lib/qhg_spinor_field.c,110
+#define D(7,90
+qhg_spinor_field_init(10,149
+qhg_spinor_field_finalize(37,681
+qhg_spinor_field_copy(47,841
+
+../lib/qhg_spinor_field.h,34
+#define _QHG_SPINOR_FIELD_H 2,28
+
+../lib/qhg_spinor_field_bc.c,51
+#define M_PI 8,109
+qhg_spinors_untwist_bc(16,250
+
+../lib/qhg_spinor_field_bc.h,37
+#define _QHG_SPINOR_FIELD_BC_H 2,31
+
+../lib/qhg_spinor_field_io.c,75
+get_file_types(12,185
+qhg_read_spinors(30,664
+qhg_write_spinors(68,1742
+
+../lib/qhg_spinor_field_io.h,37
+#define _QHG_SPINOR_FIELD_IO_H 2,31
+
+../lib/qhg_spinor_linalg.h,174
+#define _QHG_SPINOR_LINALG_H 2,29
+spinor_linalg_ax(14,243
+spinor_linalg_ypeqx(26,411
+spinor_linalg_zero(38,579
+spinor_linalg_ypequx(50,744
+spinor_linalg_ypeqdx(64,1045
+
+../lib/qhg_su3_linalg.h,259
+#define _QHG_SU3_LINALG_H 2,26
+su3_linalg_au(14,226
+su3_linalg_ueqv(26,386
+su3_linalg_ueqvd(38,549
+su3_linalg_upeqv(51,766
+su3_linalg_umeqv(63,939
+su3_linalg_zero(75,1109
+su3_linalg_diag(87,1254
+su3_linalg_trace_u(102,1488
+su3_linalg_det_u(115,1691
+
+../lib/qhg_su3_mul.h,106
+#define _QHG_SU3_MUL_H 2,23
+su3_mul_uu(14,180
+su3_mul_ud(30,473
+su3_mul_du(46,772
+su3_mul_dd(62,1079
+
+../lib/qhg_su3_project.c,732
+  double re;8,130
+  double im;9,143
+} qcd_complex_16;10,156
+#define qcd_CONJ(13,216
+#define qcd_CMUL(14,273
+#define qcd_CMULR(15,373
+#define qcd_CMULI(16,437
+#define qcd_CADJOINTMUL(17,501
+#define qcd_CADD(19,609
+#define qcd_CADDR(20,675
+#define qcd_CADDI(21,722
+#define qcd_CSUB(23,770
+#define qcd_CSUBR(24,836
+#define qcd_CSUBI(25,883
+#define qcd_CSCALE(27,931
+#define qcd_CSCALER(28,997
+#define qcd_CSCALEI(29,1043
+#define qcd_CDEV(31,1090
+#define qcd_CDEVR(32,1242
+#define qcd_CDEVI(33,1336
+#define qcd_NORM(35,1431
+#define qcd_NORMSQUARED(36,1498
+#define qcd_ARG(37,1565
+#define qcd_CPOW(38,1617
+#define qcd_CPOWR(39,1745
+#define qcd_CPOWI(40,1821
+qhg_su3_project(56,2400
+_qhg_su3_project(465,21795
+
+../lib/qhg_su3_project.h,33
+#define _QHG_SU3_PROJECT_H 2,27
+
+../lib/qhg_types.h,1127
+#define _QHG_TYPES_H 2,21
+  int proc_id;9,103
+  int nprocs;10,118
+  int proc_dims[proc_dims11,132
+  int proc_coords[proc_coords12,153
+  int neigh_proc[neigh_proc13,176
+  MPI_Comm comm;14,200
+} qhg_comms;15,217
+  int dims[dims19,274
+  int vol;20,290
+  int v3;21,301
+  int ldims[ldims23,336
+  int lvol;24,353
+  int lv3;25,365
+  int bvol[bvol27,405
+  int evol[evol29,445
+  int *nn[nn31,499
+  qhg_comms *comms;comms33,550
+} qhg_lattice;34,570
+  _Complex double *field;field37,603
+  _Complex double *bnd[bnd38,629
+  _Complex double *edge[edge39,659
+  qhg_lattice *lat;lat40,696
+} qhg_gauge_field;41,716
+  _Complex double *field;field44,753
+  _Complex double *bnd[bnd45,779
+  _Complex double *edge[edge46,809
+  qhg_lattice *lat;lat47,848
+} qhg_spinor_field;48,868
+  int (*mom_vecs)mom_vecs51,906
+  int n_mom_vecs;52,928
+  int max_mom_sq;53,946
+} qhg_mom_list;54,964
+  _Complex double *C;C57,1000
+  int site_size;58,1022
+  int origin[origin59,1039
+  int cutoff[cutoff61,1091
+  qhg_mom_list *mom_list;mom_list62,1109
+  qhg_lattice *lat;lat63,1135
+} qhg_correlator;64,1157
+
+../lib/qhg_xchange_gauge.c,76
+get_boundary(14,232
+get_boundary_edge(43,1198
+qhg_xchange_gauge(125,3538
+
+../lib/qhg_xchange_gauge.h,35
+#define _QHG_XCHANGE_GAUGE_H 2,29
+
+../lib/qhg_xchange_spinor.c,49
+get_boundary(14,232
+qhg_xchange_spinor(43,1189
+
+../lib/qhg_xchange_spinor.h,36
+#define _QHG_XCHANGE_SPINOR_H 2,30
+
+../lib/qhg_xchange_utils.h,53
+#define _QHG_XCHANGE_UTILS_H 2,29
+get_slice(14,545
+
+main.c,73
+static int read_props 9,135
+static int write_props 10,162
+main(13,195

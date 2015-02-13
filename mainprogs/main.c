@@ -6,9 +6,12 @@
 #include <complex.h>
 #include <qhg.h>
 
+static int read_props = 0;
+static int write_props = 0;
+
 int
 main(int argc, char *argv[])
-{
+{   
   int dims[] = {24,12,12,12};
   int n_ape = 50;
   double alpha_ape = 0.5;
@@ -16,7 +19,8 @@ main(int argc, char *argv[])
   double alpha_gauss = 4.0;
   int source_coords[] = {6,3,10,5}; // t,x,y,z
   int config = 3144;
-
+  int max_mom_sq = 16;
+  
   qhg_lattice *lat = qhg_lattice_init(dims);
   int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
   qhg_gauge_field gf = qhg_gauge_field_init(lat);  
@@ -65,8 +69,9 @@ main(int argc, char *argv[])
       sol_d[CS(sp,co)] = qhg_spinor_field_init(lat);
     }
 
-  goto READ;
-    
+  if(read_props)
+    goto READ;
+  
   for(int sp=0; sp<NS; sp++)
     for(int co=0; co<NC; co++) {
       qhg_spinor_field aux = qhg_spinor_field_init(lat);
@@ -75,7 +80,7 @@ main(int argc, char *argv[])
       qhg_gauss_smear(src[CS(sp,co)], aux, gf_ape, alpha_gauss, n_gauss);
       qhg_spinor_field_finalize(aux);
     }
-  
+
   /*
     Invert for solution, first for up-quark (operator 0)
    */
@@ -94,98 +99,69 @@ main(int argc, char *argv[])
     tmLQCD_invert((double *) sol_d[i].field,
   		  (double *) src[i].field,
   		  op, write_prop);
+
+  if(write_props) {
+    qhg_write_spinors("prop.up", NC*NS, sol_u);
+    qhg_write_spinors("prop.dn", NC*NS, sol_d);  
+    
+    for(int i=0; i<NS*NC; i++)
+      qhg_spinor_field_finalize(src[i]);
+    
+    MPI_Finalize();
+    return 0;
+  }
   
-  qhg_write_spinors("prop.up", 12, sol_u);
-  qhg_write_spinors("prop.dn", 12, sol_d);  
-
-  for(int i=0; i<NS*NC; i++)
-    qhg_spinor_field_finalize(src[i]);
-
-  
-  MPI_Finalize();
-  return 0;
-
 READ:
-  qhg_read_spinors(sol_u, 12, "prop.up");
-  qhg_read_spinors(sol_d, 12, "prop.dn");   
+  if(read_props) {
+    qhg_read_spinors(sol_u, NC*NS, "prop.up");
+    qhg_read_spinors(sol_d, NC*NS, "prop.dn");   
+  }
+
+  qhg_spinors_untwist_bc(sol_u, NC*NS, 1.0, source_coords[0]);
+  qhg_spinors_untwist_bc(sol_d, NC*NS, 1.0, source_coords[0]);
   
   qhg_correlator mesons = qhg_mesons(sol_u, sol_d, source_coords);
-  int max_mom_sq = 4;
-  qhg_mom_list mom_list = qhg_mom_list_init(max_mom_sq);
-  qhg_correlator mesons_ft = qhg_ft(mesons, &mom_list, "fwd");
+  qhg_correlator nucleons = qhg_nucleons(sol_u, sol_d, source_coords);
 
+  qhg_mom_list mom_list = qhg_mom_list_init(max_mom_sq);
+
+  qhg_correlator mesons_ft = qhg_ft(mesons, &mom_list, "fwd");
+  qhg_correlator nucleons_ft = qhg_ft(nucleons, &mom_list, "fwd");
+  
   qhg_spinor_field sol_sm_u[NS*NC], sol_sm_d[NS*NC];
   for(int sp=0; sp<NS; sp++)
     for(int co=0; co<NC; co++) {
       sol_sm_u[CS(sp,co)] = qhg_spinor_field_init(lat);
       sol_sm_d[CS(sp,co)] = qhg_spinor_field_init(lat);
       qhg_gauss_smear(sol_sm_u[CS(sp,co)], sol_u[CS(sp,co)], gf_ape, alpha_gauss, n_gauss);
-      qhg_gauss_smear(sol_sm_d[CS(sp,co)], sol_d[CS(sp,co)], gf_ape, alpha_gauss, n_gauss);      
+      qhg_gauss_smear(sol_sm_d[CS(sp,co)], sol_d[CS(sp,co)], gf_ape, alpha_gauss, n_gauss);
     }
-
+  
   qhg_correlator mesons_sm = qhg_mesons(sol_sm_u, sol_sm_d, source_coords);
   qhg_correlator mesons_sm_ft = qhg_ft(mesons_sm, &mom_list, "fwd");
-   
-  { /* Print the two-point function */
-    char fname[] = "mesons.dat";
-    int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
-    FILE *fp = NULL;
-    if(am_io_proc)
-      fp = fopen(fname, "w");
-    
-    int site_size = mesons_ft.site_size;
-    int nm = mesons_ft.mom_list->n_mom_vecs;    
-    int (*mv)[3] = mesons_ft.mom_list->mom_vecs;
-    int *pd = lat->comms->proc_dims;
-    int *ld = lat->ldims;
-    int *d = lat->dims;
-    for(int tt=0; tt<lat->dims[0]; tt++) {    
-      int t = (d[0] + tt + mesons_ft.origin[0]) % d[0];
-      int proc_t = t/lat->comms->proc_dims[0];
-      for(int n=0; n<nm; n++) {
-	int *k = mv[n];
-	/* Global coordinates */
-	int x[] = {t,
-		   (k[0]+d[1]) % d[1],
-		   (k[1]+d[2]) % d[2],
-		   (k[2]+d[3]) % d[3]};
+  qhg_correlator nucleons_sm = qhg_nucleons(sol_sm_u, sol_sm_d, source_coords);
+  qhg_correlator nucleons_sm_ft = qhg_ft(nucleons_sm, &mom_list, "fwd");
 
-	/* Process coordinates */
-	int px[] = {x[0]/ld[0],
-		    x[1]/ld[1],
-		    x[2]/ld[2],
-		    x[3]/ld[3]};
-
-	/* local coordinates */
-	int lx[] = {x[0]%ld[0],
-		    x[1]%ld[1],
-		    x[2]%ld[2],
-		    x[3]%ld[3]};
-
-	int lv = IDX(lx, ld);
-	int proc = IDX(px, pd);
-	if(am_io_proc)
-	  fprintf(fp, " %2d %+d %+d %+d   %+e %+e   %+e %+e LS\n",
-		  tt, k[0], k[1], k[2],
-		  creal(mesons_ft.C[lv*site_size + 0]),
-		  cimag(mesons_ft.C[lv*site_size + 0]),
-		  creal(mesons_ft.C[lv*site_size + 1]),
-		  cimag(mesons_ft.C[lv*site_size + 1])
-		  );
-	if(am_io_proc)
-	  fprintf(fp, " %2d %+d %+d %+d   %+e %+e   %+e %+e SS\n",
-		  tt, k[0], k[1], k[2],
-		  creal(mesons_sm_ft.C[lv*site_size + 0]),
-		  cimag(mesons_sm_ft.C[lv*site_size + 0]),
-		  creal(mesons_sm_ft.C[lv*site_size + 1]),
-		  cimag(mesons_sm_ft.C[lv*site_size + 1])
-		  );
-	MPI_Barrier(lat->comms->comm);
-      }
-    }
-    if(am_io_proc)
-      fclose(fp);
+  {
+    char fname[] = "mesons_sl.dat";
+    qhg_write_mesons(fname, mesons_ft);
   }
+
+  {
+    char fname[] = "mesons_ss.dat";
+    qhg_write_mesons(fname, mesons_sm_ft);
+  }
+
+  {
+    char fname[] = "nucleons_sl.dat";
+    qhg_write_nucleons(fname, nucleons_ft);
+  }
+
+  {
+    char fname[] = "nucleons_ss.dat";
+    qhg_write_nucleons(fname, nucleons_sm_ft);
+  }
+  
   /*
     Destroy momentum list
    */
@@ -198,6 +174,10 @@ READ:
   qhg_correlator_finalize(mesons_ft);
   qhg_correlator_finalize(mesons_sm);
   qhg_correlator_finalize(mesons_sm_ft);
+  qhg_correlator_finalize(nucleons);
+  qhg_correlator_finalize(nucleons_ft);
+  qhg_correlator_finalize(nucleons_sm);
+  qhg_correlator_finalize(nucleons_sm_ft);
   
   /* 
      Destroy spinor- and gauge-fields
