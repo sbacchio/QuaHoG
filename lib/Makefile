@@ -36,7 +36,8 @@ SOURCES=\
 	qhg_io_utils		\
 	qhg_spinor_field_io	\
 	qhg_spinor_field_bc	\
-	qhg_ft
+	qhg_ft			\
+	lines_utils
 
 include $(wildcard *.d)
 
