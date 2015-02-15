@@ -10,6 +10,8 @@
 #include <qhg_correlator.h>
 #include <qhg_prop_ops.h>
 #include <qhg_prop_gammas.h>
+#include <lines_types.h>
+#include <lines_utils.h>
 
 #define NGAMMAS 10			/* 1,gx,...,gt,g5,gxg5,...,gtg5 */
 #define NFLAVS 2			/* up/down */
@@ -87,7 +89,7 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 	  prop_gt_G(W, P[iflav]);
 	  prop_G_gt(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
 	  break;
 	case 6: /* g5gx */
 	  prop_g5gx_G(W, P[iflav]);
@@ -123,65 +125,84 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
   corr.mom_list = NULL;
   return corr;
 }
-
+  
 void
 qhg_write_mesons(char fname[], qhg_correlator corr)
 {
   qhg_lattice *lat = corr.lat;
-  int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
+  int proc_id = lat->comms->proc_id;
+  int am_io_proc = proc_id == 0 ? 1 : 0;
   int site_size = corr.site_size;
   int nm = corr.mom_list->n_mom_vecs;
   int lvol = lat->lvol;
   int (*mv)[3] = corr.mom_list->mom_vecs;
   int *pd = lat->comms->proc_dims;
+  int np = lat->comms->nprocs;
   int *ld = lat->ldims;
   int *d = lat->dims;
-
-  /* Gather the correlator into the 0th process */  
-  size_t nelems = site_size*lat->vol;
-  size_t nelems_loc = site_size*lat->lvol;  
-  _Complex double *data = NULL;
-  if(am_io_proc) {
-    data = qhg_alloc(sizeof(_Complex double)*nelems);  
-    memset(data, '\0', sizeof(_Complex double)*nelems);
+  int nlines[np];
+  for(int i=0; i<np; i++)
+    nlines[i] = 0;
+  
+  lines lines_loc = lines_new(d[0]*nm*NGAMMAS*NFLAVS);
+  for(int tt=0; tt<d[0]; tt++) {    
+    int t = (d[0] + tt + corr.origin[0]) % d[0];
+    for(int n=0; n<nm; n++) {
+      /* Momentum vector */
+      int *k = mv[n];
+      /* Global coordinates of momentum vector */
+      int x[] = {t, (k[0]+d[1]) % d[1], (k[1]+d[2]) % d[2], (k[2]+d[3]) % d[3]};
+      /* Coordinates of process on which x[] resides */
+      int pc[] = {x[0]/ld[0], x[1]/ld[1], x[2]/ld[2], x[3]/ld[3]};
+      /* Lexico index of pc[] */
+      int ip = IDX(pc, pd);
+      /* Local coordinates of x[] within process ip */
+      int lc[] = {x[0]%ld[0], x[1]%ld[1], x[2]%ld[2], x[3]%ld[3]};
+      /* Lexico index of lc[] */
+      int ix = IDX(lc,ld);
+      _Complex double *c = corr.C;
+      line li[NGAMMAS*NFLAVS];
+      for(int ig=0; ig<NGAMMAS; ig++)
+	for(int ifl=0; ifl<NFLAVS; ifl++) {	  
+	  int j = ifl + ig*NFLAVS;
+	  sprintf(li[j].c, "%4d %+d %+d %+d %+e %+e \t%s\t%s\n",
+		  tt, k[0], k[1], k[2],
+		  creal(c[VGF(ix, ig, ifl)]), cimag(c[VGF(ix, ig, ifl)]),
+		  gamma_tags[ig],flav_tags[ifl]);
+	  li[j].n = j + NGAMMAS*NFLAVS*(n + nm*tt);
+	}
+      nlines[ip] += NGAMMAS*NFLAVS;
+      if(proc_id == ip)
+	lines_loc = lines_append(lines_loc, li, NGAMMAS*NFLAVS);
+    }
   }
-  MPI_Gather(corr.C, 2*nelems_loc, MPI_DOUBLE, data, 2*nelems_loc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-  /* Loop over momentum vectors, calculate which process the momentum
-     resides on, and print */
+  int nl = 0;
+  int displs[np];
+  for(int i=0; i<np; i++)
+    displs[i] = 0;
+  
+  for(int i=0; i<np; i++) {
+    nl += nlines[i];
+    nlines[i] *= sizeof(line);
+    for(int j=0; j<i; j++)
+      displs[i] += nlines[j];
+  }
+  
+  lines lines_glob = lines_new(nl);
+  MPI_Gatherv(lines_loc.l, nlines[proc_id], MPI_BYTE,
+	      lines_glob.l, nlines, displs, MPI_BYTE, 0, lat->comms->comm);
+
+  lines_glob = lines_sorted(lines_glob);
+
   if(am_io_proc) {
     FILE *fp = fopen(fname, "w");
-    for(int tt=0; tt<d[0]; tt++) {    
-      int t = (d[0] + tt + corr.origin[0]) % d[0];
-      for(int n=0; n<nm; n++) {
-	/* Momentum vector */
-	int *k = mv[n];
-	/* Global coordinates of momentum vector */
-	int x[] = {t, (k[0]+d[1]) % d[1], (k[1]+d[2]) % d[2], (k[2]+d[3]) % d[3]};
-	/* Coordinates of process on which x[] resides */
-	int pc[] = {x[0]/ld[0], x[1]/ld[1], x[2]/ld[2], x[3]/ld[3]};
-	/* Lexico index of pc[] */
-	int ip = IDX(pc, pd);
-	/* Local coordinates of x[] within process ip */
-	int lc[] = {x[0]%ld[0], x[1]%ld[1], x[2]%ld[2], x[3]%ld[3]};
-	/* Lexico index of lc[] */
-	int ix = IDX(lc,ld);
-	_Complex double *c = &data[ip*nelems_loc];
-	for(int ig=0; ig<NGAMMAS; ig++)
-	  for(int ifl=0; ifl<NFLAVS; ifl++) {	  
-	    fprintf(fp, "%4d %+d %+d %+d %+e %+e \t%s\t%s\n",
-		    tt, k[0], k[1], k[2],
-		    creal(c[VGF(ix, ig, ifl)]), cimag(c[VGF(ix, ig, ifl)]),
-		    gamma_tags[ig],flav_tags[ifl]);
-	  }
-      }
-    }
+    for(int i=0; i<nl; i++)
+      fprintf(fp, "%s", lines_glob.l[i].c);
     fclose(fp);
   }
-
-  if(am_io_proc)
-    free(data);
-
-  MPI_Barrier(lat->comms->comm);
+  
+  lines_del(lines_loc);
+  lines_del(lines_glob);  
   return;
 }

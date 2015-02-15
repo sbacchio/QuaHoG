@@ -6,16 +6,16 @@
 #include <complex.h>
 #include <qhg.h>
 
-static int read_props = 0;
+static int read_props = 1;
 static int write_props = 0;
 
 int
 main(int argc, char *argv[])
 {   
   int dims[] = {24,12,12,12};
-  int n_ape = 50;
+  int n_ape = 0;
   double alpha_ape = 0.5;
-  int n_gauss = 50;
+  int n_gauss = 0;
   double alpha_gauss = 4.0;
   int source_coords[] = {6,3,10,5}; // t,x,y,z
   int config = 3144;
@@ -112,14 +112,17 @@ main(int argc, char *argv[])
   }
   
 READ:
+  if(am_io_proc)
+    printf("Read\n");
   if(read_props) {
     qhg_read_spinors(sol_u, NC*NS, "prop.up");
     qhg_read_spinors(sol_d, NC*NS, "prop.dn");   
   }
-
+  if(am_io_proc)
+    printf("Untwist\n");
   qhg_spinors_untwist_bc(sol_u, NC*NS, 1.0, source_coords[0]);
   qhg_spinors_untwist_bc(sol_d, NC*NS, 1.0, source_coords[0]);
-  
+
   qhg_correlator mesons = qhg_mesons(sol_u, sol_d, source_coords);
   qhg_correlator nucleons = qhg_nucleons(sol_u, sol_d, source_coords);
 
@@ -143,21 +146,29 @@ READ:
   qhg_correlator nucleons_sm_ft = qhg_ft(nucleons_sm, &mom_list, "fwd");
 
   {
+    if(am_io_proc)
+      printf("Write mesons (local)\n");
     char fname[] = "mesons_sl.dat";
     qhg_write_mesons(fname, mesons_ft);
   }
 
   {
+    if(am_io_proc)
+      printf("Write mesons (smeared)\n");
     char fname[] = "mesons_ss.dat";
     qhg_write_mesons(fname, mesons_sm_ft);
   }
 
   {
+    if(am_io_proc)
+      printf("Write nucleons (local)\n");
     char fname[] = "nucleons_sl.dat";
     qhg_write_nucleons(fname, nucleons_ft);
   }
 
   {
+    if(am_io_proc)
+      printf("Write nucleons (smeared)\n");
     char fname[] = "nucleons_ss.dat";
     qhg_write_nucleons(fname, nucleons_sm_ft);
   }
@@ -167,9 +178,10 @@ READ:
    */
   qhg_mom_list_finalize(mom_list);
  
-  /*
-    Destroy correlators
-   */
+  
+  /* 
+     Destroy correlators 
+  */
   qhg_correlator_finalize(mesons);
   qhg_correlator_finalize(mesons_ft);
   qhg_correlator_finalize(mesons_sm);
@@ -179,8 +191,9 @@ READ:
   qhg_correlator_finalize(nucleons_sm);
   qhg_correlator_finalize(nucleons_sm_ft);
   
+  
   /* 
-     Destroy spinor- and gauge-fields
+     Destroy spinor- and gauge-fields 
   */
   for(int i=0; i<NS*NC; i++) {
     qhg_spinor_field_finalize(sol_u[i]);
