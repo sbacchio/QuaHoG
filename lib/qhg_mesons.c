@@ -87,7 +87,7 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 	  prop_gt_G(W, P[iflav]);
 	  prop_G_gt(V, W);	  
 	  prop_mul_gd(C, V, P[iflav]);
-	  corr.C[VGF(v, igamma, iflav)] = prop_trace(C);
+	  corr.C[VGF(v, igamma, iflav)] = -prop_trace(C);
 	  break;
 	case 6: /* g5gx */
 	  prop_g5gx_G(W, P[iflav]);
@@ -181,5 +181,7 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
 
   if(am_io_proc)
     free(data);
+
+  MPI_Barrier(lat->comms->comm);
   return;
 }

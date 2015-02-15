@@ -245,5 +245,7 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
 
   if(am_io_proc)
     free(data);
+
+  MPI_Barrier(lat->comms->comm);
   return;
 }
