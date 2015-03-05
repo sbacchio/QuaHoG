@@ -143,10 +143,8 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
   int nlines[np];
   for(int i=0; i<np; i++)
     nlines[i] = 0;
-  
   lines lines_loc = lines_new(d[0]*nm*NGAMMAS*NFLAVS);
-  for(int tt=0; tt<d[0]; tt++) {    
-    int t = (d[0] + tt + corr.origin[0]) % d[0];
+  for(int t=0; t<d[0]; t++) {    
     for(int n=0; n<nm; n++) {
       /* Momentum vector */
       int *k = mv[n];
@@ -162,14 +160,16 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
       int ix = IDX(lc,ld);
       _Complex double *c = corr.C;
       line li[NGAMMAS*NFLAVS];
+      /* Shift to time relative to source */
+      int tt = (d[0] + t - corr.origin[0]) % d[0];
       for(int ig=0; ig<NGAMMAS; ig++)
 	for(int ifl=0; ifl<NFLAVS; ifl++) {	  
 	  int j = ifl + ig*NFLAVS;
+	  li[j].n = j + NGAMMAS*NFLAVS*(n + nm*tt);
 	  sprintf(li[j].c, "%4d %+d %+d %+d %+e %+e \t%s\t%s\n",
 		  tt, k[0], k[1], k[2],
 		  creal(c[VGF(ix, ig, ifl)]), cimag(c[VGF(ix, ig, ifl)]),
 		  gamma_tags[ig],flav_tags[ifl]);
-	  li[j].n = j + NGAMMAS*NFLAVS*(n + nm*tt);
 	}
       nlines[ip] += NGAMMAS*NFLAVS;
       if(proc_id == ip)
@@ -181,19 +181,17 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
   int displs[np];
   for(int i=0; i<np; i++)
     displs[i] = 0;
-  
   for(int i=0; i<np; i++) {
     nl += nlines[i];
     nlines[i] *= sizeof(line);
     for(int j=0; j<i; j++)
       displs[i] += nlines[j];
   }
-  
   lines lines_glob = lines_new(nl);
   MPI_Gatherv(lines_loc.l, nlines[proc_id], MPI_BYTE,
 	      lines_glob.l, nlines, displs, MPI_BYTE, 0, lat->comms->comm);
-
-  lines_glob = lines_sorted(lines_glob);
+  lines_glob.cur = lines_glob.len;
+  lines_glob = lines_sorted(lines_glob, NGAMMAS*NFLAVS);
 
   if(am_io_proc) {
     FILE *fp = fopen(fname, "w");

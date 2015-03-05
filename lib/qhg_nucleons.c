@@ -204,8 +204,7 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
     nlines[i] = 0;
   
   lines lines_loc = lines_new(d[0]*nm*NFLAV*NCHAN*NCOMP*NCOMP);
-  for(int tt=0; tt<d[0]; tt++) {    
-    int t = (d[0] + tt + corr.origin[0]) % d[0];
+  for(int t=0; t<d[0]; t++) {    
     for(int n=0; n<nm; n++) {
       /* Momentum vector */
       int *k = mv[n];
@@ -221,10 +220,13 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
       int ix = IDX(lc,ld);
       _Complex double *c = corr.C;
       line li[NFLAV*NCHAN*NCOMP];
+      /* Shift to time relative to source */
+      int tt = (d[0] + t - corr.origin[0]) % d[0];      
       for(int ifl=0; ifl<NFLAV; ifl++)
 	for(int ich=0; ich<NCHAN; ich++)
 	  for(int si0=0; si0<NCOMP; si0++) {
 	    int j = si0 + NCOMP*(ich + NCHAN*ifl);
+	    li[j].n = j + NFLAV*NCHAN*NCOMP*(n + nm*tt);
 	    sprintf(li[j].c, "%4d %+d %+d %+d  %+e %+e  %+e %+e  %+e %+e  %+e %+e  %s %s\n",
 		    tt, k[0], k[1], k[2],
 		    creal(c[NIDX(ix, ifl, ich, si0, 0)]), cimag(c[NIDX(ix, ifl, ich, si0, 0)]),
@@ -233,7 +235,6 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
 		    creal(c[NIDX(ix, ifl, ich, si0, 3)]), cimag(c[NIDX(ix, ifl, ich, si0, 3)]),
 		    flav_tags[ifl],
 		    chan_tags[ich]);
-	    li[j].n = j + NFLAV*NCHAN*NCOMP*(n + nm*tt);	    
 	  }
       nlines[ip] += NFLAV*NCHAN*NCOMP;
       if(proc_id == ip)
@@ -257,8 +258,8 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
   lines lines_glob = lines_new(nl);
   MPI_Gatherv(lines_loc.l, nlines[proc_id], MPI_BYTE,
 	      lines_glob.l, nlines, displs, MPI_BYTE, 0, lat->comms->comm);
-
-  lines_glob = lines_sorted(lines_glob);
+  lines_glob.cur = lines_glob.len;
+  lines_glob = lines_sorted(lines_glob, NFLAV*NCHAN*NCOMP);
 
   if(am_io_proc) {
     FILE *fp = fopen(fname, "w");
