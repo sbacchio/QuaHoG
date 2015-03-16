@@ -10,6 +10,7 @@
 #include <qhg_correlator.h>
 #include <qhg_prop_gammas.h>
 #include <qhg_prop_ops.h>
+#include <qhg_io_utils.h>
 #include <lines_types.h>
 #include <lines_utils.h>
 
@@ -18,7 +19,6 @@
 #define NCHAN (4)
 #define SITE_SIZE (NFLAV*NCOMP*NCOMP*NCHAN)
 #define NIDX(v, f, chi, si0, si1) (si1 + NCOMP*(si0 + NCOMP*(chi + NCHAN*(f+NFLAV*v))))
-#define VSC(v, sc) (sc + NC*NS*v)
 
 static char flav_tags[NFLAV][256] = {"ppm\0",
 				     "pmm\0"};
@@ -42,11 +42,10 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
     _Complex double C[NS*NC][NS*NC];    
     _Complex double W[NS*NC][NS*NC];
     _Complex double V[NS*NC][NS*NC];        
-    for(int cs0=0; cs0<NS*NC; cs0++)
-      for(int cs1=0; cs1<NS*NC; cs1++) {
-	U[cs0][cs1] = sp_u[cs1].field[VSC(v, cs0)];
-	D[cs0][cs1] = sp_d[cs1].field[VSC(v, cs0)];	
-      }
+
+    prop_load(U, sp_u, v);
+    prop_load(D, sp_d, v);    
+
     _Complex double (*P[2])[NC*NS] = {U, D};
     for(int iflav=0; iflav<NFLAV; iflav++) {
       _Complex double (*y)[NC*NS] = P[(iflav+0)%2];
@@ -262,7 +261,7 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
   lines_glob = lines_sorted(lines_glob, NFLAV*NCHAN*NCOMP);
 
   if(am_io_proc) {
-    FILE *fp = fopen(fname, "w");
+    FILE *fp = qhg_fopen(fname, "w");
     for(int i=0; i<nl; i++)
       fprintf(fp, "%s", lines_glob.l[i].c);
     fclose(fp);

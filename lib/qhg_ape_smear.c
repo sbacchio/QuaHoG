@@ -2,8 +2,7 @@
 
 #include <complex.h>
 #include <qhg_defs.h>
-#include <qhg_su3_mul.h>
-#include <qhg_su3_linalg.h>
+#include <qhg_su3_ops.h>
 #include <qhg_su3_project.h>
 #include <qhg_gauge_field.h>
 #include <qhg_xchange_gauge.h>

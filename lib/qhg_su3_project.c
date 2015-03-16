@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <math.h>
-#include <qhg_su3_mul.h>
-#include <qhg_su3_linalg.h>
+#include <qhg_su3_ops.h>
 
 typedef struct {
   double re;
@@ -466,16 +465,16 @@ _qhg_su3_project(_Complex double *u, int n)
 {
   for(int i=0; i<n; i++) {
     qcd_complex_16 M[NC][NC];
-    _Complex double *_M = &M[0][0].re;
+    _Complex double *_M = (_Complex double *)&M[0][0].re;
     su3_linalg_ueqv(_M, &u[i*NC*NC]);
 	
     qcd_complex_16 detM;
-    _Complex double *_detM = &detM.re;
+    _Complex double *_detM = (_Complex double *)&detM.re;
     *_detM = su3_linalg_det_u(_M);
     double phase = carg(*_detM)/3.;
 
     qcd_complex_16 H[NC][NC];
-    _Complex double *_H = &H[0][0].re;
+    _Complex double *_H = (_Complex double *)&H[0][0].re;
     
     su3_mul_du(_H, _M, _M);
      /*
@@ -512,7 +511,7 @@ _qhg_su3_project(_Complex double *u, int n)
          U[2][1] = (qcd_complex_16) { M[2][1].re*e[2], M[2][1].im*e[2] };
          U[2][2] = (qcd_complex_16) { M[2][2].re*e[2], M[2][2].im*e[2] };
 
-	 _Complex double *_U = &U[0][0].re;
+	 _Complex double *_U = (_Complex double *)&U[0][0].re;
 	 su3_linalg_upeqv(&u[i*NC*NC], _U);
        }
      else
@@ -531,15 +530,15 @@ _qhg_su3_project(_Complex double *u, int n)
 	 /* _H[CC(1, 1)] -= dtr[CC(1, 1)]; */
 	 /* _H[CC(2, 2)] -= dtr[CC(2, 2)]; */
 	 
-	 if(isnan(dtr[0])) {
-	     /* for(int j=0; j<NC; j++) */
-	     /*   for(int k=0; k<NC; k++) */
-	     /* 	 printf("%+e%+e\n", creal(dtr[j*NC+k]), cimag(dtr[j*NC+k])); */
-	     for(int j=0; j<NC; j++)
-	       for(int k=0; k<NC; k++)
-		 printf("%+e%+e\n", creal(_M[j*NC+k]), cimag(_M[j*NC+k]));
-	     exit(0);
-	 }
+	 /* if(isnan(dtr[0])) { */
+	 /*     /\* for(int j=0; j<NC; j++) *\/ */
+	 /*     /\*   for(int k=0; k<NC; k++) *\/ */
+	 /*     /\* 	 printf("%+e%+e\n", creal(dtr[j*NC+k]), cimag(dtr[j*NC+k])); *\/ */
+	 /*     for(int j=0; j<NC; j++) */
+	 /*       for(int k=0; k<NC; k++) */
+	 /* 	 printf("%+e%+e\n", creal(_M[j*NC+k]), cimag(_M[j*NC+k])); */
+	 /*     exit(0); */
+	 /* } */
 	 /* su3_linalg_umeqv(_H, dtr); */
 
 	 /* for(int j=0; j<NC; j++) */

@@ -1,0 +1,6 @@
+#ifndef _QHG_PROP_PROJ_H
+#define _QHG_PROP_PROJ_H 1
+
+__PYTHON_SEGMENT_GOES_HERE__
+
+#endif /* _QHG_PROP_PROJ_H */

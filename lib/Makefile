@@ -36,7 +36,11 @@ SOURCES=\
 	qhg_io_utils		\
 	qhg_spinor_field_io	\
 	qhg_spinor_field_bc	\
+	qhg_spinor_field_linalg	\
+	qhg_nn_thrp		\
+	qhg_prop_field_linalg	\
 	qhg_ft			\
+	qhg_nn_sequential_sink	\
 	lines_utils
 
 include $(wildcard *.d)

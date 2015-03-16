@@ -10,6 +10,7 @@
 #include <qhg_correlator.h>
 #include <qhg_prop_ops.h>
 #include <qhg_prop_gammas.h>
+#include <qhg_io_utils.h>
 #include <lines_types.h>
 #include <lines_utils.h>
 
@@ -17,7 +18,6 @@
 #define NFLAVS 2			/* up/down */
 #define NCHANNELS ((NGAMMAS)*(NFLAVS))
 #define VGF(v, g, f) ((v)*NCHANNELS + (g)*NFLAVS + (f))
-#define VSC(v, cs) ((v)*NC*NS + (cs))
 
 static char gamma_tags[NGAMMAS][256] = {"   =1=\0",
 					"  =g5=\0",
@@ -45,11 +45,10 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     _Complex double C[NS*NC][NS*NC];    
     _Complex double W[NS*NC][NS*NC];
     _Complex double V[NS*NC][NS*NC];        
-    for(int cs0=0; cs0<NS*NC; cs0++)
-      for(int cs1=0; cs1<NS*NC; cs1++) {
-	U[cs0][cs1] = sp_u[cs1].field[VSC(v, cs0)];
-	D[cs0][cs1] = sp_d[cs1].field[VSC(v, cs0)];	
-      }
+
+    prop_load(U, sp_u, v);
+    prop_load(D, sp_d, v);
+    
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
       _Complex double (*P[2])[NC*NS] = {U, D};
       for(int iflav=0; iflav<NFLAVS; iflav++) {
@@ -194,7 +193,7 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
   lines_glob = lines_sorted(lines_glob, NGAMMAS*NFLAVS);
 
   if(am_io_proc) {
-    FILE *fp = fopen(fname, "w");
+    FILE *fp = qhg_fopen(fname, "w");
     for(int i=0; i<nl; i++)
       fprintf(fp, "%s", lines_glob.l[i].c);
     fclose(fp);
