@@ -36,7 +36,13 @@ qhg_read_spinors(qhg_spinor_field psi[], int n_spinors, char fname[])
   get_file_types(&elemtype, &filetype, lat);
   
   MPI_File fhandle;
-  MPI_File_open(MPI_COMM_WORLD, fname, MPI_MODE_RDONLY, MPI_INFO_NULL, &fhandle);
+  int err = MPI_File_open(MPI_COMM_WORLD, fname, MPI_MODE_RDONLY, MPI_INFO_NULL, &fhandle);
+  if(err != 0) {
+    if(am_io_proc) {
+      fprintf(stderr, "error opening file in %s\n", __func__);      
+    }
+    MPI_Abort(MPI_COMM_WORLD, -2);
+  }
   MPI_File_set_size(fhandle, 0); 
   MPI_File_set_view(fhandle, 0, elemtype, filetype, "native", MPI_INFO_NULL);
   
