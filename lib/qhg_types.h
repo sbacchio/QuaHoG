@@ -63,4 +63,17 @@ typedef struct {
   qhg_lattice *lat;  
 } qhg_correlator;
 
+enum projector {
+  P0,
+  P3,
+  P4,
+  P5,
+  P6
+};
+
+typedef struct {
+  enum projector proj;
+  int dt;
+} qhg_thrp_nn_sink_params;
+
 #endif /* _QHG_TYPES_H */
