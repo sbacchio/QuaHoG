@@ -123,5 +123,7 @@ qhg_ft(qhg_correlator corr_x, qhg_mom_list *mom_list, char direction[])
   corr_p.origin[1] = 0;
   corr_p.origin[2] = 0;
   corr_p.origin[3] = 0;  
+  for(int i=0; i<ND; i++)
+    corr_p.cutoff[i] = corr_x.cutoff[i];
   return corr_p;
 }
