@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int
 qhg_is_bigendian()
@@ -45,4 +46,16 @@ qhg_byte_swap_double(double *buf, size_t n)
     swap = c[3]; c[3] = c[4]; c[4] = swap;
   }
   return;
+}
+
+FILE *
+qhg_fopen(char fname[], char *mode)
+{
+  FILE *fp = NULL;
+  fp = fopen(fname, mode);
+  if(fp == NULL) {
+    fprintf(stderr, "%s: error opening file, mode = %s\n", fname, mode);
+    exit(-3);
+  }
+  return fp;
 }

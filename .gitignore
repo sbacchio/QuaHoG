@@ -1,5 +1,6 @@
 Makefile.in
-mainprogs/main
+mainprogs/thrp/main
+mainprogs/twop/main
 *~
 *.a
 *.o

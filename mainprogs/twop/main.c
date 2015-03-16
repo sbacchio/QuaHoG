@@ -45,23 +45,20 @@ main(int argc, char *argv[])
   }
   int config = atoi(argv[1]);
   int dims[ND] = {6, 4, 4, 4}; // t,x,y,z
+  int max_mom_sq = 8;  
   int n_ape = 50;
   double alpha_ape = 0.5;
   int n_gausses[NSMR];
   double alpha_gausses[NSMR];
   int source_coords[NSRC][ND];
+
   {
     char *fname_sourcepos;
     asprintf(&fname_sourcepos, "sources.%04d.list", config);  
-    FILE *fp = fopen(fname_sourcepos, "r");
+    FILE *fp = qhg_fopen(fname_sourcepos, "r");
     for(int i=0; i<NSRC; i++) {
       int *s = &source_coords[i][0];
       fscanf(fp, "%d %d %d %d", &s[0], &s[1], &s[2], &s[3]);
-      /* printf("%d %d %d %d\n", */
-      /* 	     source_coords[i][0], */
-      /* 	     source_coords[i][1], */
-      /* 	     source_coords[i][2], */
-      /* 	     source_coords[i][3]); */
     }
     fclose(fp);
   }
@@ -69,16 +66,14 @@ main(int argc, char *argv[])
   {
     char *fname_smearings;
     asprintf(&fname_smearings, "smearings.%04d.list", config);
-    FILE *fp = fopen(fname_smearings, "r");
+    FILE *fp = qhg_fopen(fname_smearings, "r");
     for(int i=0; i<NSMR; i++) {
       int *n = &n_gausses[i];
       double *a = &alpha_gausses[i];
       fscanf(fp, "%d %lf", n, a);
-      //printf("%d %g\n", n_gausses[i], alpha_gausses[i]);
     }
     fclose(fp);
   }
-  int max_mom_sq = 8;
   
   qhg_lattice *lat = qhg_lattice_init(dims);
   int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
@@ -131,38 +126,40 @@ main(int argc, char *argv[])
     }
 
   qhg_mom_list mom_list = qhg_mom_list_init(max_mom_sq);  
+
   /*
     APE string used in filenames
    */
   char *apestr;
   asprintf(&apestr, "aN%da%s", n_ape, flt_str(alpha_ape));
-  /*
-    Loop over smearings
-   */
-  for(int ismr=0; ismr<NSMR; ismr++) {
-    double alpha_gauss = alpha_gausses[ismr];
-    int n_gauss = n_gausses[ismr];
-    /*
-      Source smearing string used in filenames
-    */
-    char *smr_0_str;
-    asprintf(&smr_0_str, "g0N%da%s", n_gauss, flt_str(alpha_gauss));
-    /*
-      Loop over source positions
-    */  
-    for(int isrc=0; isrc<NSRC; isrc++) {
-      /* 
-	 This source position coordinates 
-      */
-      int *sco = &source_coords[isrc][0];
-      if(am_io_proc)
-	printf("Source coords (t, x, y, z) = (%d, %d, %d, %d)\n", sco[0], sco[1], sco[2], sco[3]);
-      /*
-	Source position string to be used in filenames
-      */
-      char *srcstr;
-      asprintf(&srcstr, "sx%02dsy%02dsz%02dst%02d", sco[1], sco[2], sco[3], sco[0]);
 
+  /*
+    Loop over source positions
+  */  
+  for(int isrc=0; isrc<NSRC; isrc++) {
+    /* 
+       This source position coordinates 
+    */
+    int *sco = &source_coords[isrc][0];
+    if(am_io_proc)
+      printf("Source coords (t, x, y, z) = (%d, %d, %d, %d)\n", sco[0], sco[1], sco[2], sco[3]);
+    /*
+      Source position string to be used in filenames
+    */
+    char *srcstr;
+    asprintf(&srcstr, "sx%02dsy%02dsz%02dst%02d", sco[1], sco[2], sco[3], sco[0]);
+    /*
+      Loop over smearings
+    */
+    for(int ismr=0; ismr<NSMR; ismr++) {
+      double alpha_gauss = alpha_gausses[ismr];
+      int n_gauss = n_gausses[ismr];
+      /*
+	Source smearing string used in filenames
+      */
+      char *smr_0_str;
+      asprintf(&smr_0_str, "g0N%da%s", n_gauss, flt_str(alpha_gauss));
+      
       /*
 	Smear the source for this source position
       */
@@ -289,10 +286,11 @@ main(int argc, char *argv[])
 	qhg_correlator_finalize(nucleons_ft);
 	free(smr_x_str);
       }
-      free(srcstr);
+      free(smr_0_str);    
     }
-    free(smr_0_str);    
+    free(srcstr);
   }
+
   /*
     Destroy momentum list
   */

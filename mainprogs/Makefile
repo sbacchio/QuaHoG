@@ -1,5 +1,3 @@
-include ../Makefile.in
-
 ifndef V
        V = 0
 endif
@@ -13,35 +11,13 @@ else
 	MAKE += --no-print-directory
 endif
 
-TARGET = main
+DIRS = twop thrp
 
-all: $(TARGET) lib
-
-LIBDIR = ../lib
-
-CFLAGS += -I$(LIBDIR)
-LDFLAGS += -L$(LIBDIR)
-LIBS := -lqhg $(LIBS)
-
-SOURCES = main 
-
-$(TARGET): ${addsuffix .o, $(SOURCES)} lib
-	$(E) LD $@
-	$(C)$(CC) $(CFLAGS) -o $@  ${addsuffix .o, $(SOURCES)} $(LDFLAGS) $(LIBS)
-
-lib:
-	$(E) MAKE LIB
-	$(C)$(MAKE) -C $(LIBDIR)
-
-%.o: %.c
-	$(E) CC $< in $(shell pwd)
-	$(C)$(CC) $(CFLAGS) -c $< -o $@
+all: 
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done
 
 clean:
-	$(E) CLEAN in $(PWD)
-	$(C)$(RM) *.o
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d clean); done
 
 cleanall: clean
-	$(E) CLEANALL in $(PWD)
-	$(C)$(RM) $(TARGET) 
-	$(C)$(MAKE) -C $(LIBDIR) cleanall
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d cleanall); done
