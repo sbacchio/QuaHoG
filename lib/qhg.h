@@ -7,6 +7,7 @@
 #include <qhg_idx.h>
 #include <qhg_lattice.h>
 #include <qhg_comms.h>
+#include <qhg_stop_watch.h>
 #include <qhg_gauge_field.h>
 #include <qhg_spinor_field.h>
 #include <qhg_correlator.h>

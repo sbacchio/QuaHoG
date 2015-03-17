@@ -19,6 +19,7 @@ SOURCES=\
 	qhg_lattice		\
 	qhg_comms		\
 	qhg_alloc		\
+	qhg_stop_watch		\
 	qhg_gauge_field		\
 	qhg_spinor_field	\
 	qhg_correlator		\
