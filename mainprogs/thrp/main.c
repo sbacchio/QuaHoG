@@ -12,11 +12,11 @@
 #endif
 
 
-static int read_fwd_props = 1;
-static int write_fwd_props = 0;
+static int read_fwd_props = 0;
+static int write_fwd_props = 1;
 
-static int read_bwd_props = 1;
-static int write_bwd_props = 0;
+static int read_bwd_props = 0;
+static int write_bwd_props = 1;
 
 char *
 flt_str(double x)
@@ -36,8 +36,8 @@ flt_str(double x)
 }
 
 #define NF 2
-#define NSRC 2
-#define NSNK (8)
+#define NSRC 4
+#define NSNK (12)
 
 enum flavs {
   up,
@@ -101,8 +101,8 @@ main(int argc, char *argv[])
     exit(2);
   }
   
-  int dims[ND] = {6, 4, 4, 4}; // t,x,y,z
-  int max_mom_sq = 8;  
+  int dims[ND] = {48, 24, 24, 24}; // t,x,y,z
+  int max_mom_sq = 16;  
   int n_ape = 50;
   double alpha_ape = 0.5;
   int n_gauss = 50;
@@ -134,7 +134,25 @@ main(int argc, char *argv[])
     }
     fclose(fp);
   }
+
+  char prop_dir[256];
+  {
+    char *fname_prop_dir;
+    asprintf(&fname_prop_dir, "prop.%04d.dir", config);  
+    FILE *fp = qhg_fopen(fname_prop_dir, "r");
+    fscanf(fp, "%s", prop_dir);
+    fclose(fp);
+  }
   
+  char corr_dir[256];
+  {
+    char *fname_corr_dir;
+    asprintf(&fname_corr_dir, "corr.%04d.dir", config);  
+    FILE *fp = qhg_fopen(fname_corr_dir, "r");
+    fscanf(fp, "%s", corr_dir);
+    fclose(fp);
+  }
+
   qhg_lattice *lat = qhg_lattice_init(dims);
   int am_io_proc = lat->comms->proc_id == 0 ? 1 : 0;
   qhg_gauge_field gf = qhg_gauge_field_init(lat);  
@@ -257,11 +275,11 @@ main(int argc, char *argv[])
     if(write_fwd_props) {
       char *propname;
       
-      asprintf(&propname, "prop_%s.up", srcstr);      
+      asprintf(&propname, "%s/prop_%s.up", prop_dir, srcstr);      
       qhg_write_spinors(propname, NC*NS, sol_u);
       free(propname);
       
-      asprintf(&propname, "prop_%s.dn", srcstr);      
+      asprintf(&propname, "%s/prop_%s.dn", prop_dir, srcstr);      
       qhg_write_spinors(propname, NC*NS, sol_d);
       free(propname);      
     }
@@ -275,11 +293,11 @@ main(int argc, char *argv[])
   FREAD: if(read_fwd_props) {
       char *propname;
       
-      asprintf(&propname, "prop_%s.up", srcstr);      
+      asprintf(&propname, "%s/prop_%s.up", prop_dir, srcstr);      
       qhg_read_spinors(sol_u, NC*NS, propname);
       free(propname);
       
-      asprintf(&propname, "prop_%s.dn", srcstr);      
+      asprintf(&propname, "%s/prop_%s.dn", prop_dir, srcstr);      
       qhg_read_spinors(sol_d, NC*NS, propname);
       free(propname);      
     }
@@ -325,7 +343,7 @@ main(int argc, char *argv[])
     */
     {
       char *fname;
-      asprintf(&fname, "mesons_%s_%s_%s.dat", srcstr, smrstr, apestr);
+      asprintf(&fname, "%s/mesons_%s_%s_%s.dat", corr_dir, srcstr, smrstr, apestr);
       qhg_write_mesons(fname, mesons_ft);
       if(am_io_proc)
 	printf("Wrote %s\n", fname); 
@@ -335,7 +353,7 @@ main(int argc, char *argv[])
     
     {
       char *fname;
-      asprintf(&fname, "nucleons_%s_%s_%s.dat", srcstr, smrstr, apestr);
+      asprintf(&fname, "%s/nucleons_%s_%s_%s.dat", corr_dir, srcstr, smrstr, apestr);
       qhg_write_nucleons(fname, nucleons_ft);
       if(am_io_proc)
 	printf("Wrote %s\n", fname); 
@@ -404,7 +422,7 @@ main(int argc, char *argv[])
 	*/
 	if(write_bwd_props) {
 	  char *propname;	
-	  asprintf(&propname, "backprop_%s_%s_dt%02d.%s", srcstr, proj_to_str(thrp_snk[isnk].proj),
+	  asprintf(&propname, "%s/backprop_%s_%s_dt%02d.%s", prop_dir, srcstr, proj_to_str(thrp_snk[isnk].proj),
 		   thrp_snk[isnk].dt, flav_str[flav]);
 	  qhg_write_spinors(propname, NC*NS, seq_sol);
 	  free(propname);
@@ -413,7 +431,7 @@ main(int argc, char *argv[])
       BREAD: if(read_bwd_props) {
 	  char *propname;
       
-	  asprintf(&propname, "backprop_%s_%s_dt%02d.%s", srcstr, proj_to_str(thrp_snk[isnk].proj),
+	  asprintf(&propname, "%s/backprop_%s_%s_dt%02d.%s", prop_dir, srcstr, proj_to_str(thrp_snk[isnk].proj),
 		   thrp_snk[isnk].dt, flav_str[flav]);
 	  qhg_read_spinors(seq_sol, NC*NS, propname);
 	  free(propname);
@@ -454,8 +472,8 @@ main(int argc, char *argv[])
 	 */
 	{
 	  char *fname;
-	  asprintf(&fname, "thrp_%s_%s_%s_%s_dt%02d.%s",
-		   srcstr, smrstr, apestr, proj_to_str(thrp_snk[isnk].proj),
+	  asprintf(&fname, "%s/thrp_%s_%s_%s_%s_dt%02d.%s",
+		   corr_dir, srcstr, smrstr, apestr, proj_to_str(thrp_snk[isnk].proj),
 		   thrp_snk[isnk].dt, flav_str[flav]);
 	  qhg_write_nn_thrp(fname, thrp_ft);
 	  if(am_io_proc)
