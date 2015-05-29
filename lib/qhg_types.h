@@ -71,6 +71,18 @@ enum projector {
   P6
 };
 
+enum flavor {
+  up,
+  dn
+};
+
+typedef struct {
+  qhg_correlator corr;
+  int dt;
+  enum flavor flav;
+  enum projector proj;
+} qhg_thrp_correlator;
+
 typedef struct {
   enum projector proj;
   int dt;
