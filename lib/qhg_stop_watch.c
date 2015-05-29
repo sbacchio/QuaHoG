@@ -1,4 +1,5 @@
 #include <sys/time.h>
+#include <stdlib.h>
 
 double
 qhg_stop_watch(double t0)
