@@ -76,8 +76,9 @@ qhg_ape_smear_3d_iter(qhg_gauge_field out, qhg_gauge_field in, double alpha_in)
 void
 qhg_ape_smear_3d(qhg_gauge_field out, qhg_gauge_field in, double alpha, int niter)
 {
-  qhg_gauge_field aux[2] = {qhg_gauge_field_init(in.lat),
-			    qhg_gauge_field_init(in.lat)};
+  qhg_gauge_field aux[2];
+  aux[0] = qhg_gauge_field_init(in.lat);
+  aux[1] = qhg_gauge_field_init(in.lat);
 
   qhg_gauge_field_copy(aux[0], in);
   qhg_gauge_field_copy(aux[1], in); /* This will copy the temporal links which will be left untouched */

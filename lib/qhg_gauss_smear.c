@@ -53,8 +53,9 @@ void
 qhg_gauss_smear(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field gf,
 		double alpha, int niter)
 {
-  qhg_spinor_field aux[2] = {qhg_spinor_field_init(in.lat),
-			     qhg_spinor_field_init(in.lat)};
+  qhg_spinor_field aux[2];
+  aux[0] = qhg_spinor_field_init(in.lat);
+  aux[1] = qhg_spinor_field_init(in.lat);
 
   qhg_xchange_gauge(gf);
 
