@@ -68,7 +68,7 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
       ldims[0] = lt-t0%lt;
     
     if(pc[0] == t_proc_ts)
-      ldims[0] = ldims[0] - lt-ts%lt + 1;
+      ldims[0] = ldims[0] - (lt-ts%lt) + 1;
 
     if((pc[0] == t_proc_ts) && (pc[0] == t_proc_t0))
       ldims[0] = dt+1;
