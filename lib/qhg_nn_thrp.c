@@ -29,6 +29,9 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
     qhg_xchange_spinor(fwd[i]);
   }
   
+#ifdef QHG_OMP
+#pragma omp parallel for
+#endif
   for(int v=0; v<lvol; v++) {
     _Complex double F[NS*NC][NS*NC];
     _Complex double B[NS*NC][NS*NC];

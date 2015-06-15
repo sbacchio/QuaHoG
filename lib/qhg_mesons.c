@@ -18,6 +18,10 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
   qhg_lattice *lat = sp_u[0].lat;
   qhg_correlator corr = qhg_correlator_init(NCHANNELS, lat);
   int lvol = lat->lvol;
+
+#ifdef QHG_OMP
+#pragma omp parallel for
+#endif
   for(int v=0; v<lvol; v++) {
     _Complex double U[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];    

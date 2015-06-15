@@ -19,6 +19,9 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
   qhg_correlator corr = qhg_correlator_init(SITE_SIZE, lat);
   int lvol = lat->lvol;
 
+#ifdef QHG_OMP
+#pragma omp parallel for
+#endif
   for(int v=0; v<lvol; v++) {
     _Complex double U[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];    

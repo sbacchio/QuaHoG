@@ -12,12 +12,26 @@
 void
 qhg_ape_smear_3d_iter(qhg_gauge_field out, qhg_gauge_field in, double alpha_in)
 {
+#ifdef QHG_OMP
+#pragma omp parallel
+  {
+#endif
+    
   int vol = in.lat->vol;
   int lvol = in.lat->lvol;
   int **nn = in.lat->nn;
   double alpha = 4.0*alpha_in / (1.0 + 4.0*alpha_in);
 
+#ifdef QHG_OMP
+#pragma omp single
+  {
+#endif  
+
   qhg_xchange_gauge(in);
+
+#ifdef QHG_OMP
+  }
+#endif  
 
   _Complex double *U = in.field;
   _Complex double *V = out.field;  
@@ -29,6 +43,9 @@ qhg_ape_smear_3d_iter(qhg_gauge_field out, qhg_gauge_field in, double alpha_in)
   su3_linalg_diag(one_minus_alpha, z);
   
   for(int mu=1; mu<ND; mu++)
+#ifdef QHG_OMP
+#pragma omp for
+#endif
     for(int v00=0; v00<lvol; v00++) {
       su3_linalg_zero(staple);
 
@@ -69,7 +86,9 @@ qhg_ape_smear_3d_iter(qhg_gauge_field out, qhg_gauge_field in, double alpha_in)
       
       su3_mul_uu(u1, w, u0);
     }
-  
+#ifdef QHG_OMP
+  }
+#endif
   return;
 }
 

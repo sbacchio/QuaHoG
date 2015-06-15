@@ -1,7 +1,7 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O2 -std=gnu99 -I$(HOME)/tmLQCD-builds/g-koutsou/include -fopenmp
+CFLAGS=-O2 -DQHG_OMP -std=gnu99 -I$(HOME)/tmLQCD-builds/g-koutsou/include -fopenmp
 LDFLAGS=-L$(HOME)/tmLQCD-builds/g-koutsou/lib -L$(HOME)/loc-install/lib -L$(HOME)/build/MPI/ARPACK/lib
 LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -Wl,-commons,use_dylibs -Wl,-commons,use_dylibs -I/usr/local/Cellar/open-mpi/1.8.3/lib -L/usr/local/opt/libevent/lib -L/usr/local/Cellar/open-mpi/1.8.3/lib -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lmpi -lgfortran -llapack -lblas -lm -llemon -llime -fopenmp
 

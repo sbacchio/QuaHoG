@@ -4,6 +4,9 @@
 #include <qhg_idx.h>
 #include <qhg_types.h>
 #include <tmLQCD.h>
+#ifdef QHG_OMP
+#include <omp.h>
+#endif
 
 qhg_comms *
 qhg_comms_init(qhg_lattice *lat)
@@ -39,7 +42,20 @@ qhg_comms_init(qhg_lattice *lat)
   }
   comms->proc_id = mp.cart_id;
   comms->nprocs = mp.nproc;
-   
+
+#ifdef QHG_OMP
+  comms->nthreads = mp.omp_num_threads;
+  omp_set_num_threads(comms->nthreads);  
+#pragma omp parallel
+  {
+    int ithr = omp_get_thread_num();
+    if(ithr == 0 && comms->proc_id == 0)
+      printf(" Numb. threads = %d\n", comms->nthreads);
+  }
+#else
+  comms->nthreads = 1;
+#endif   
+  
   for(int dir=0; dir<ND; dir++) {
     int c[ND];
 

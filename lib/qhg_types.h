@@ -8,6 +8,7 @@
 typedef struct {
   int proc_id;
   int nprocs;
+  int nthreads;
   int proc_dims[ND];
   int proc_coords[ND];
   int neigh_proc[2*ND];
