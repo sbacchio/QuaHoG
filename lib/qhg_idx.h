@@ -31,4 +31,10 @@
  */
 #define IDX(co,d) (co[3] + d[3]*(co[2] + d[2]*(co[1] + d[1]*co[0])));
 
+/*
+ * Same as above but for three dimensions
+ * 
+ */
+#define IDX3(co,d) (co[2] + d[2]*(co[1] + d[1]*co[0]))
+
 #endif /* _QHG_IDX_H */

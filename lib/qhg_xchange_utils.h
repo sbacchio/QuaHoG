@@ -8,7 +8,7 @@
  * and return the MPI_Datatype that corrsponds to it. slice is the
  * coordinate in direction dir of the slice. That is, the MPI_Datatype
  * will return the slice: (0:dims[0]-1, 0:dims[1]-1, ..., slice,
- * 0:dims[dir+1]-1, ..., 0:dims[ndims-1]-1)
+ *                         0:dims[dir+1]-1, ..., 0:dims[ndims-1]-1)
  */
 static MPI_Datatype
 get_slice(int ndims, int dims[], int dir, int slice, size_t site_size)

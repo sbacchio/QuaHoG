@@ -34,7 +34,7 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
       _Complex double (*P[2])[NC*NS] = {U, D};
-      for(int iflav=0; iflav<NFLAVS; iflav++) {
+      for(int iflav=0; iflav<NFLAV; iflav++) {
 	/*
 	 * Sign flips are for consistency with libqcd
 	 */

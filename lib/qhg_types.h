@@ -57,7 +57,7 @@ typedef struct {
 typedef struct {
   _Complex double *C;
   int site_size;
-  int origin[ND];
+  int *origin;
   /* So far cutoff is not used */
   int cutoff[ND];
   qhg_mom_list *mom_list;

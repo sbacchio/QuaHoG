@@ -31,8 +31,10 @@ SOURCES=\
 	qhg_mom_list		\
 	qhg_mesons		\
 	qhg_write_mesons	\
+	qhg_write_mom_mesons	\
 	qhg_nucleons		\
 	qhg_write_nucleons	\
+	qhg_write_mom_nucleons	\
 	qhg_ape_smear		\
 	qhg_su3_project		\
 	qhg_gauss_smear		\
@@ -42,9 +44,11 @@ SOURCES=\
 	qhg_spinor_field_linalg	\
 	qhg_nn_thrp		\
 	qhg_write_nn_thrp	\
+	qhg_write_mom_nn_thrp	\
 	qhg_prop_field_linalg	\
 	qhg_ft			\
 	qhg_nn_sequential_sink	\
+	qhg_correlator_shift	\
 	lines_utils
 
 include $(wildcard *.d)

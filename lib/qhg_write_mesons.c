@@ -66,7 +66,7 @@ qhg_write_mesons(char fname[], qhg_correlator corr)
      Hierarchy is /flavor/interpolator/ with flavor one of up or dn,
      and with interpolator one of 10 gamma-matrix combinations
   */
-  for(int iflav=0; iflav<NFLAVS; iflav++) {
+  for(int iflav=0; iflav<NFLAV; iflav++) {
     char *group_tag;
     asprintf(&group_tag, "%s", flav_tags[iflav]);
     hid_t group1_id = H5Gcreate(file_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
