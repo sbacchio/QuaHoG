@@ -345,7 +345,7 @@ main(int argc, char *argv[])
     {
       t0 = qhg_stop_watch(0);      
       char *fname;
-      asprintf(&fname, "%s/mesons_mom_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      asprintf(&fname, "%s/mesons_mom_%s_%s_%s.txt", corr_dir, srcstr, smrstr, apestr);
       qhg_write_mom_mesons(fname, mesons_ft);
       if(am_io_proc)
 	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
@@ -367,7 +367,7 @@ main(int argc, char *argv[])
     {
       t0 = qhg_stop_watch(0);
       char *fname;
-      asprintf(&fname, "%s/nucleons_mom_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      asprintf(&fname, "%s/nucleons_mom_%s_%s_%s.txt", corr_dir, srcstr, smrstr, apestr);
       qhg_write_mom_nucleons(fname, nucleons_ft);
       if(am_io_proc)
 	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
@@ -527,7 +527,7 @@ main(int argc, char *argv[])
 	{
 	  t0 = qhg_stop_watch(0);
 	  char *fname;
-	  asprintf(&fname, "%s/thrp_mom_%s_%s_%s_%s_dt%02d.%s.h5",
+	  asprintf(&fname, "%s/thrp_mom_%s_%s_%s_%s_dt%02d.%s.txt",
 		   corr_dir, srcstr, smrstr, apestr, proj_to_str(thrp_snk[isnk].proj),
 		   thrp_snk[isnk].dt, flav_str[flav]);
 	  qhg_write_mom_nn_thrp(fname, thrp_ft);
