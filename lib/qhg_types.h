@@ -8,6 +8,7 @@
 typedef struct {
   int proc_id;
   int nprocs;
+  int nthreads;
   int proc_dims[ND];
   int proc_coords[ND];
   int neigh_proc[2*ND];
@@ -57,7 +58,7 @@ typedef struct {
 typedef struct {
   _Complex double *C;
   int site_size;
-  int origin[ND];
+  int *origin;
   /* So far cutoff is not used */
   int cutoff[ND];
   qhg_mom_list *mom_list;
@@ -71,6 +72,18 @@ enum projector {
   P5,
   P6
 };
+
+enum flavor {
+  up,
+  dn
+};
+
+typedef struct {
+  qhg_correlator corr;
+  int dt;
+  enum flavor flav;
+  enum projector proj;
+} qhg_thrp_correlator;
 
 typedef struct {
   enum projector proj;

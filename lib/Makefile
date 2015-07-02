@@ -30,7 +30,11 @@ SOURCES=\
 	qhg_plaquette		\
 	qhg_mom_list		\
 	qhg_mesons		\
+	qhg_write_mesons	\
+	qhg_write_mom_mesons	\
 	qhg_nucleons		\
+	qhg_write_nucleons	\
+	qhg_write_mom_nucleons	\
 	qhg_ape_smear		\
 	qhg_su3_project		\
 	qhg_gauss_smear		\
@@ -39,9 +43,12 @@ SOURCES=\
 	qhg_spinor_field_bc	\
 	qhg_spinor_field_linalg	\
 	qhg_nn_thrp		\
+	qhg_write_nn_thrp	\
+	qhg_write_mom_nn_thrp	\
 	qhg_prop_field_linalg	\
 	qhg_ft			\
 	qhg_nn_sequential_sink	\
+	qhg_correlator_shift	\
 	lines_utils
 
 include $(wildcard *.d)
@@ -54,7 +61,7 @@ libqhg.a: ${addsuffix .o, $(SOURCES)}
 %.o: %.c
 	$(E) CC $<
 	$(C)$(CC) $(CFLAGS) -c $< -o $@
-	$(C)$(CC) -MM $(CFLAGS) $< > $*.d
+	$(C)$(CC) -MM $(CFLAGS) -c $< > $*.d
 
 clean:
 	$(E) CLEAN in $(PWD)

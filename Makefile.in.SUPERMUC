@@ -1,6 +1,6 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O3 -axAVX -D_GNU_SOURCE -std=gnu99 -I$(HOME)/tmLQCD/include
+CFLAGS=-O3 -axAVX -D_GNU_SOURCE -std=gnu99 -I$(HOME)/tmLQCD/include -I$(HDF5_BASE)/include/
 LDFLAGS=-L$(HOME)/tmLQCD/lib -L$(HOME)/loc-install/lib -L$(HOME)/loc-install/ARPACK/lib
 LIBS=-lwrapper -lhmc -lmeas -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -mkl -lm -llemon -llime -lifcore -limf

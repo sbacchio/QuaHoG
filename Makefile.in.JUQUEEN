@@ -1,0 +1,7 @@
+AR=ar
+RANLIB=ranlib
+CC=mpixlc_r
+CFLAGS=-O3 -qsrcmsg -qsmp=omp:noauto:schedule=static -qthreaded -qstrict=all -qtune=qp -qarch=qp -qmaxmem=-1 -I$(HOME)/koutsou/tmLQCD/include -qaggrcopy=overlap $(HDF5_COMPILER_INCLUDE)
+LDFLAGS=-L$(HOME)/koutsou/tmLQCD/lib -L$(HOME)/koutsou/loc-install/lib -L/bgsys/local/lib -L/opt/ibmcmp/xlf/bg/14.1/lib64 -L/bgsys/local/lapack/3.4.2_simd/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -llapack -lesslsmpbg -lm -llemon -llime -lxl -lxlopt -lxlf90_r -lxlfmath -qsmp=omp:noauto:schedule=static
+

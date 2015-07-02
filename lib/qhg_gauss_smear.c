@@ -13,16 +13,33 @@
 void
 qhg_gauss_smear_iter(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field gf, double alpha)
 {
+#ifdef QHG_OMP
+#pragma omp parallel
+  {
+#endif
+
   double norm = 1.0/(1.0 + 6.0*alpha);
   int vol = in.lat->vol;
   int lvol = in.lat->lvol;
   int **nn = in.lat->nn;
     
+#ifdef QHG_OMP
+#pragma omp single
+  {
+#endif  
+
   qhg_xchange_spinor(in);
+
+#ifdef QHG_OMP
+  }
+#endif  
 
   _Complex double *U = gf.field;
   _Complex double *phi = in.field;  
   _Complex double *psi = out.field;  
+#ifdef QHG_OMP
+#pragma omp for
+#endif
   for(int v0=0; v0<lvol; v0++) {
     _Complex double *s = &psi[S(v0)];
     spinor_linalg_zero(s);
@@ -46,6 +63,11 @@ qhg_gauss_smear_iter(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field 
     spinor_linalg_ypeqx(s, p);
     spinor_linalg_ax(norm, s);
   }
+
+#ifdef QHG_OMP
+  }
+#endif
+
   return;
 }
 
@@ -53,8 +75,9 @@ void
 qhg_gauss_smear(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field gf,
 		double alpha, int niter)
 {
-  qhg_spinor_field aux[2] = {qhg_spinor_field_init(in.lat),
-			     qhg_spinor_field_init(in.lat)};
+  qhg_spinor_field aux[2];
+  aux[0] = qhg_spinor_field_init(in.lat);
+  aux[1] = qhg_spinor_field_init(in.lat);
 
   qhg_xchange_gauge(gf);
 
