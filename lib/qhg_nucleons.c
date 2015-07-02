@@ -175,10 +175,7 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
 	}
     }
   }
-
   
-  for(int i=0; i<ND; i++)
-    corr.origin[i] = source_coords[i];
   corr.mom_list = NULL;
   return corr;
 }

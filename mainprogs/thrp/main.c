@@ -36,49 +36,10 @@ flt_str(double x)
 }
 
 #define NF 2
-#define NSRC (2)
-#define NSNK (1)
-
-enum flavs {
-  up,
-  dn
-};
+#define NSRC (1)
+#define NSNK (3*4)
 
 char flav_str[NF][3] = {"up","dn"};
-
-static char *
-proj_to_str(enum projector proj)
-{
-  switch(proj) {
-  case P0:
-    return "P0\0";
-  case P3:
-    return "P3\0";
-  case P4:
-    return "P4\0";
-  case P5:
-    return "P5\0";
-  case P6:
-    return "P6\0";
-  }
-  return NULL;
-}
-
-static enum projector
-str_to_proj(char s[])
-{
-  if(strcmp(s, "P0\0") == 0)
-    return P0;
-  if(strcmp(s, "P3\0") == 0)
-    return P3;
-  if(strcmp(s, "P4\0") == 0)
-    return P4;
-  if(strcmp(s, "P5\0") == 0)
-    return P5;
-  if(strcmp(s, "P6\0") == 0)
-    return P6;
-  return -1;
-}
 
 void
 usage(char *argv[])
@@ -101,9 +62,9 @@ main(int argc, char *argv[])
     exit(2);
   }
   
-  int dims[ND] = {32, 16, 16, 16}; // t,x,y,z
+  int dims[ND] = {48, 24, 24, 24}; // t,x,y,z
   int max_mom_sq = 16;  
-  int n_ape = 20;
+  int n_ape = 50;
   double alpha_ape = 0.5;
   int n_gauss = 50;
   double alpha_gauss = 4.0;
@@ -322,7 +283,7 @@ main(int argc, char *argv[])
 	printf("Read %s in %g sec\n", propname, qhg_stop_watch(t0));
       free(propname);            
     }
-
+    
     /*
       Twist t-phase to anti-periodic boundary conditions
     */
@@ -344,28 +305,26 @@ main(int argc, char *argv[])
       }
     if(am_io_proc)
       printf("Done smearing in %g sec\n", qhg_stop_watch(t0));  
-    
+
     /*
       Set bc in spinor structures
-     */
+    */
     _Complex double abc[ND] = {-1,1,1,1};
     qhg_spinors_set_bc(sol_sm_u, NC*NS, abc);
-    qhg_spinors_set_bc(sol_sm_d, NC*NS, abc);    
-
+    qhg_spinors_set_bc(sol_sm_d, NC*NS, abc);
+    
     /*
       Smeared nucleon and meson correlators and fourier transform
     */
     t0 = qhg_stop_watch(0);
     qhg_correlator mesons = qhg_mesons(sol_sm_u, sol_sm_d, sco);
     qhg_correlator mesons_ft = qhg_ft(mesons, &mom_list, "fwd");
-    qhg_correlator_finalize(mesons);
     if(am_io_proc)
       printf("Done meson correlator in %g sec\n", qhg_stop_watch(t0)); 
 
     t0 = qhg_stop_watch(0);    
     qhg_correlator nucleons = qhg_nucleons(sol_sm_u, sol_sm_d, sco);
     qhg_correlator nucleons_ft = qhg_ft(nucleons, &mom_list, "fwd");
-    qhg_correlator_finalize(nucleons);
     if(am_io_proc)
       printf("Done nucleon correlator in %g sec\n", qhg_stop_watch(t0)); 
     
@@ -375,8 +334,19 @@ main(int argc, char *argv[])
     {
       t0 = qhg_stop_watch(0);      
       char *fname;
-      asprintf(&fname, "%s/mesons_%s_%s_%s.dat", corr_dir, srcstr, smrstr, apestr);
-      qhg_write_mesons(fname, mesons_ft);
+      asprintf(&fname, "%s/mesons_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      qhg_write_mesons(fname, mesons);
+      if(am_io_proc)
+	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
+      free(fname);
+    }
+    qhg_correlator_finalize(mesons);
+
+    {
+      t0 = qhg_stop_watch(0);      
+      char *fname;
+      asprintf(&fname, "%s/mesons_mom_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      qhg_write_mom_mesons(fname, mesons_ft);
       if(am_io_proc)
 	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
       free(fname);
@@ -386,16 +356,27 @@ main(int argc, char *argv[])
     {
       t0 = qhg_stop_watch(0);
       char *fname;
-      asprintf(&fname, "%s/nucleons_%s_%s_%s.dat", corr_dir, srcstr, smrstr, apestr);
-      qhg_write_nucleons(fname, nucleons_ft);
+      asprintf(&fname, "%s/nucleons_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      qhg_write_nucleons(fname, nucleons);
+      if(am_io_proc)
+	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
+      free(fname);
+    }
+    qhg_correlator_finalize(nucleons);
+
+    {
+      t0 = qhg_stop_watch(0);
+      char *fname;
+      asprintf(&fname, "%s/nucleons_mom_%s_%s_%s.h5", corr_dir, srcstr, smrstr, apestr);
+      qhg_write_mom_nucleons(fname, nucleons_ft);
       if(am_io_proc)
 	printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
       free(fname);
     }
     qhg_correlator_finalize(nucleons_ft);
-
+    
     /*
-      Twist t-phase back to twisted boundary conditions
+      Twist t-phase to back to twisted boundary conditions
     */
     qhg_spinors_untwist_bc(sol_u, NC*NS, -1.0, sco[0]);
     qhg_spinors_untwist_bc(sol_d, NC*NS, -1.0, sco[0]);
@@ -504,21 +485,26 @@ main(int argc, char *argv[])
 	qhg_prop_field_g5_G(seq_sol);
 	qhg_prop_field_Gdag(seq_sol);
 
-	_Complex double abc[ND] = {-1,1,1,1};
-	qhg_spinors_set_bc(fwd[flav], NC*NS, abc);
-	qhg_spinors_set_bc(seq_sol, NC*NS, abc);    
+        _Complex double abc[ND] = {-1,1,1,1};
+        qhg_spinors_set_bc(fwd[flav], NC*NS, abc);
+        qhg_spinors_set_bc(seq_sol, NC*NS, abc);
 	
 	/*
 	  Three-point function. Needs gauge-field for derivative
 	  operators. 
 	 */
 	t0 = qhg_stop_watch(0);
-	qhg_correlator thrp = qhg_nn_thrp(fwd[flav], seq_sol, gf, sco, thrp_snk[isnk]);
-	
-	/* 
-	   Fourier transform over momuntum insertion
-	*/
-	qhg_correlator thrp_ft = qhg_ft(thrp, &mom_list, "bwd");
+	qhg_thrp_correlator thrp;
+	thrp.corr = qhg_nn_thrp(fwd[flav], seq_sol, gf, sco, thrp_snk[isnk]);
+	thrp.flav = flav;
+	thrp.dt = thrp_snk[isnk].dt;
+	thrp.proj = thrp_snk[isnk].proj;	
+
+	qhg_thrp_correlator thrp_ft;
+	thrp_ft.corr = qhg_ft(thrp.corr, &mom_list, "bwd");
+	thrp_ft.flav = flav;
+	thrp_ft.dt = thrp_snk[isnk].dt;
+	thrp_ft.proj = thrp_snk[isnk].proj;	
 	if(am_io_proc)
 	  printf("Done three-point correlator in %g sec\n", qhg_stop_watch(t0)); 
 	
@@ -528,21 +514,29 @@ main(int argc, char *argv[])
 	{
 	  t0 = qhg_stop_watch(0);
 	  char *fname;
-	  asprintf(&fname, "%s/thrp_%s_%s_%s_%s_dt%02d.%s",
+	  asprintf(&fname, "%s/thrp_%s_%s_%s_%s_dt%02d.%s.h5",
 		   corr_dir, srcstr, smrstr, apestr, proj_to_str(thrp_snk[isnk].proj),
 		   thrp_snk[isnk].dt, flav_str[flav]);
-	  qhg_write_nn_thrp(fname, thrp_ft);
+	  qhg_write_nn_thrp(fname, thrp);
 	  if(am_io_proc)
 	    printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
 	  free(fname);
 	}
+	qhg_correlator_finalize(thrp.corr);
 
-	/*
-	  Clean-up
-	 */
-	qhg_correlator_finalize(thrp_ft);
-	qhg_correlator_finalize(thrp);
-
+	{
+	  t0 = qhg_stop_watch(0);
+	  char *fname;
+	  asprintf(&fname, "%s/thrp_mom_%s_%s_%s_%s_dt%02d.%s.h5",
+		   corr_dir, srcstr, smrstr, apestr, proj_to_str(thrp_snk[isnk].proj),
+		   thrp_snk[isnk].dt, flav_str[flav]);
+	  qhg_write_mom_nn_thrp(fname, thrp_ft);
+	  if(am_io_proc)
+	    printf("Wrote %s in %g sec\n", fname, qhg_stop_watch(t0)); 
+	  free(fname);
+	}
+	qhg_correlator_finalize(thrp_ft.corr);
+	
 	/*
 	  Need to twist forward prop, to be used in next sequential
 	  sink
