@@ -28,7 +28,7 @@ typedef struct {
   /* Volume of edges */
   int evol[ND][ND];
   /* Nearest neighbor indexing */
-  int *nn[2*ND];  
+  int *nn[2*ND];
   /* Pointer to comms struct */
   qhg_comms *comms;
 } qhg_lattice;
@@ -43,7 +43,8 @@ typedef struct {
 typedef struct {
   _Complex double *field;
   _Complex double *bnd[2*ND];
-  _Complex double *edge[2*ND][2*ND];  
+  _Complex double *edge[2*ND][2*ND];
+  _Complex double *bc;
   qhg_lattice *lat;
 } qhg_spinor_field;
 

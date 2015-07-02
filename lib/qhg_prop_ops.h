@@ -69,6 +69,16 @@ prop_store(qhg_spinor_field s[NC*NS], int v, _Complex double A[NC*NS][NC*NS])
 }
 
 static void
+prop_scale(_Complex double a, _Complex double A[NC*NS][NC*NS])
+{
+  for(int cs0=0; cs0<NS*NC; cs0++)
+    for(int cs1=0; cs1<NS*NC; cs1++) {
+      A[cs0][cs1] = a*A[cs0][cs1];
+    }
+  return;
+}
+
+static void
 prop_zero(_Complex double A[NC*NS][NC*NS])
 {
   for(int cs0=0; cs0<NS*NC; cs0++)

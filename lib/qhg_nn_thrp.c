@@ -13,6 +13,7 @@
 #include <qhg_prop_ops.h>
 #include <qhg_su3_ops.h>
 #include <qhg_io_utils.h>
+#include <qhg_spinor_field_bc.h>
 #include <lines_types.h>
 #include <lines_utils.h>
 
@@ -113,6 +114,13 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
   qhg_correlator corr = qhg_correlator_init(SITE_SIZE, lat);
   int lvol = lat->lvol;
   int **nn = lat->nn;
+  for(int i=0; i<ND; i++)
+    corr.origin[i] = source_coords[i];
+  int tsrc = corr.origin[0];  
+  int Lt = lat->dims[0];
+  int lv3 = lat->lv3;
+  int lt = lat->ldims[0];
+  int t0 = lat->ldims[0]*lat->comms->proc_coords[0];  
 
   for(int i=0; i<NS*NC; i++) {
     qhg_xchange_spinor(bwd[i]);
@@ -125,6 +133,13 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
     _Complex double T[NS*NC][NS*NC];
     prop_load(F, fwd, v);
     prop_load(B, bwd, v);
+
+    int t = v/lv3;
+    int gt = t + t0;
+    if(gt < tsrc) {
+      prop_scale(fwd[0].bc[0], F);
+      prop_scale(bwd[0].bc[0], B);
+    }
 
     /* Local */
     for(int i=0; i<NLOC; i++) {
@@ -218,6 +233,27 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(FM, fwd, vm);
       prop_load(BP, bwd, vp);
       prop_load(BM, bwd, vm);
+
+      if(mu == 0) {
+	int t = v/lv3;
+	int gt0 = t + t0;			/* Global absolute insertion time */
+	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
+	if(gdt + tsrc + 1 >= Lt) {
+	  prop_scale(fwd[0].bc[0], FP);
+	  prop_scale(bwd[0].bc[0], BP);
+	}
+      }
+
+      if(mu == 0) {
+	int t = v/lv3;
+	int gt0 = t + t0;			/* Global absolute insertion time */
+	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
+	if(gdt + tsrc - 1 < 0 || gdt + tsrc - 1 >= Lt) {
+	  prop_scale(fwd[0].bc[0], FM);
+	  prop_scale(bwd[0].bc[0], BM);
+	}
+      }
+      
       switch(i) {
       case noe_g0:
 	prop_1pg0_G(gpFM, FM);
@@ -289,6 +325,27 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(BP, bwd, vp);
       prop_load(BM, bwd, vm);
 
+
+      if(mu == 0) {
+	int t = v/lv3;
+	int gt0 = t + t0;			/* Global absolute insertion time */
+	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
+	if(gdt + tsrc + 1 >= Lt) {
+	  prop_scale(fwd[0].bc[0], FP);
+	  prop_scale(bwd[0].bc[0], BP);
+	}
+      }
+
+      if(mu == 0) {
+	int t = v/lv3;
+	int gt0 = t + t0;			/* Global absolute insertion time */
+	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
+	if(gdt + tsrc - 1 < 0 || gdt + tsrc - 1 >= Lt) {
+	  prop_scale(fwd[0].bc[0], FM);
+	  prop_scale(bwd[0].bc[0], BM);
+	}
+      }
+      
       prop_mul_su3_U_G(T, FP, U0);
       prop_mul_gg(A0, T, B);      
 
@@ -773,8 +830,6 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
     }  
   }
     
-  for(int i=0; i<ND; i++)
-    corr.origin[i] = source_coords[i];
   int T = lat->dims[0];
   corr.cutoff[0] = (source_coords[0] + thrp_sink.dt) % T;
   corr.mom_list = NULL;

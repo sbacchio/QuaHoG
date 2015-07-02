@@ -5,6 +5,7 @@
 
 qhg_spinor_field qhg_spinor_field_init(qhg_lattice *);
 void qhg_spinor_field_finalize(qhg_spinor_field );
+void qhg_spinor_field_set_bc(qhg_spinor_field , _Complex double []);
 void qhg_spinor_field_copy(qhg_spinor_field, qhg_spinor_field);
 
 #endif /* _QHG_SPINOR_FIELD_H */

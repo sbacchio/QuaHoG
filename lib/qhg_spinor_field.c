@@ -30,7 +30,18 @@ qhg_spinor_field_init(qhg_lattice *lat)
       }
     
   sp.lat = lat;
+  sp.bc = qhg_alloc(sizeof(_Complex double)*ND);
+  for(int d=0; d<ND; d++)
+    sp.bc[d] = 1.;
   return sp;
+}
+
+void
+qhg_spinor_field_set_bc(qhg_spinor_field sp, _Complex double bc[])
+{
+  for(int d=0; d<ND; d++)
+    sp.bc[d] = bc[d];
+  return;
 }
 
 void
@@ -40,6 +51,7 @@ qhg_spinor_field_finalize(qhg_spinor_field sp)
   for(int dir=0; dir<2*ND; dir++)
     sp.bnd[dir] = NULL;
   sp.lat = NULL;
+  free(sp.bc);
   return;
 }
 
@@ -47,6 +59,7 @@ void
 qhg_spinor_field_copy(qhg_spinor_field y, qhg_spinor_field x)
 {
   y.lat = x.lat;
+  memcpy(y.bc, x.bc, sizeof(_Complex double)*ND);
   memcpy(y.field, x.field, x.lat->lvol*NC*NS*sizeof(_Complex double));
   return;
 }

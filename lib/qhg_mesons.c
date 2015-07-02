@@ -38,7 +38,13 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 {
   qhg_lattice *lat = sp_u[0].lat;
   qhg_correlator corr = qhg_correlator_init(NCHANNELS, lat);
+  for(int i=0; i<ND; i++)
+    corr.origin[i] = source_coords[i];
+  int tsrc = corr.origin[0];  
   int lvol = lat->lvol;
+  int lv3 = lat->lv3;
+  int lt = lat->ldims[0];
+  int t0 = lat->ldims[0]*lat->comms->proc_coords[0];  
   for(int v=0; v<lvol; v++) {
     _Complex double U[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];    
@@ -48,6 +54,13 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
 
     prop_load(U, sp_u, v);
     prop_load(D, sp_d, v);
+
+    int t = v/lv3;
+    int gt = t + t0;
+    if(gt < tsrc) {
+      prop_scale(sp_u[0].bc[0], U);
+      prop_scale(sp_d[0].bc[0], D);
+    }
     
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
       _Complex double (*P[2])[NC*NS] = {U, D};
@@ -119,8 +132,6 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     }
   }
   
-  for(int i=0; i<ND; i++)
-    corr.origin[i] = source_coords[i];
   corr.mom_list = NULL;
   return corr;
 }

@@ -11,6 +11,7 @@
 #include <qhg_types.h>
 #include <qhg_defs.h>
 #include <qhg_spinor_linalg.h>
+#include <qhg_spinor_field.h>
 
 void
 qhg_spinors_untwist_bc(qhg_spinor_field psi[], int n_spinors, double theta, int t_origin)
@@ -23,7 +24,7 @@ qhg_spinors_untwist_bc(qhg_spinor_field psi[], int n_spinors, double theta, int 
   for(int isp=0; isp<n_spinors; isp++) {
     for(int t=0; t<lt; t++) {
       int gt = t0+t;
-      int dt = (Lt+gt-t_origin)%Lt;
+      int dt = gt - t_origin;
       double phi = (M_PI*theta*dt)/Lt;
       _Complex double phase = cos(phi) + _Complex_I*sin(phi);
       for(int v=lv3*t; v<lv3*(t+1); v++) {
@@ -32,5 +33,14 @@ qhg_spinors_untwist_bc(qhg_spinor_field psi[], int n_spinors, double theta, int 
       }
     }
   }
+  return;
+}
+
+void
+qhg_spinors_set_bc(qhg_spinor_field psi[], int n_spinors, _Complex double bc[ND])
+{
+  for(int isp=0; isp<n_spinors; isp++)
+    qhg_spinor_field_set_bc(psi[isp], bc);
+  
   return;
 }
