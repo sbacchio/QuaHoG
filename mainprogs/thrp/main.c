@@ -12,11 +12,11 @@
 #endif
 
 
-static int read_fwd_props = 0;
-static int write_fwd_props = 1;
+static int read_fwd_props = 1;
+static int write_fwd_props = 0;
 
-static int read_bwd_props = 0;
-static int write_bwd_props = 1;
+static int read_bwd_props = 1;
+static int write_bwd_props = 0;
 
 char *
 flt_str(double x)
@@ -36,8 +36,8 @@ flt_str(double x)
 }
 
 #define NF 2
-#define NSRC 2
-#define NSNK (4)
+#define NSRC (2)
+#define NSNK (1)
 
 enum flavs {
   up,
@@ -101,9 +101,9 @@ main(int argc, char *argv[])
     exit(2);
   }
   
-  int dims[ND] = {6, 4, 4, 4}; // t,x,y,z
-  int max_mom_sq = 2;  
-  int n_ape = 50;
+  int dims[ND] = {32, 16, 16, 16}; // t,x,y,z
+  int max_mom_sq = 16;  
+  int n_ape = 20;
   double alpha_ape = 0.5;
   int n_gauss = 50;
   double alpha_gauss = 4.0;
@@ -322,7 +322,7 @@ main(int argc, char *argv[])
 	printf("Read %s in %g sec\n", propname, qhg_stop_watch(t0));
       free(propname);            
     }
-    
+
     /*
       Twist t-phase to anti-periodic boundary conditions
     */
@@ -344,7 +344,14 @@ main(int argc, char *argv[])
       }
     if(am_io_proc)
       printf("Done smearing in %g sec\n", qhg_stop_watch(t0));  
-	
+    
+    /*
+      Set bc in spinor structures
+     */
+    _Complex double abc[ND] = {-1,1,1,1};
+    qhg_spinors_set_bc(sol_sm_u, NC*NS, abc);
+    qhg_spinors_set_bc(sol_sm_d, NC*NS, abc);    
+
     /*
       Smeared nucleon and meson correlators and fourier transform
     */
@@ -388,7 +395,7 @@ main(int argc, char *argv[])
     qhg_correlator_finalize(nucleons_ft);
 
     /*
-      Twist t-phase to back to twisted boundary conditions
+      Twist t-phase back to twisted boundary conditions
     */
     qhg_spinors_untwist_bc(sol_u, NC*NS, -1.0, sco[0]);
     qhg_spinors_untwist_bc(sol_d, NC*NS, -1.0, sco[0]);
@@ -497,6 +504,10 @@ main(int argc, char *argv[])
 	qhg_prop_field_g5_G(seq_sol);
 	qhg_prop_field_Gdag(seq_sol);
 
+	_Complex double abc[ND] = {-1,1,1,1};
+	qhg_spinors_set_bc(fwd[flav], NC*NS, abc);
+	qhg_spinors_set_bc(seq_sol, NC*NS, abc);    
+	
 	/*
 	  Three-point function. Needs gauge-field for derivative
 	  operators. 
