@@ -1,6 +1,6 @@
 Makefile.in
 mainprogs/thrp/main
-mainprogs/twop/main
+mainprogs/rms/main
 *~
 *.a
 *.o

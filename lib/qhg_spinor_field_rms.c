@@ -54,6 +54,11 @@ qhg_spinor_field_rms(qhg_spinor_field in, int origin[ND])
       for(int i=1; i<ND; i++)
 	x[i] = (dims[i] + lx[i] + pc[i]*ldims[i] - origin[i]) % dims[i];
 
+      for(int i=1; i<ND; i++)
+	x[i] = x[i] > dims[i]/2 ? dims[i] - x[i] : x[i];
+      
+      
+
       int rsq = 0;
       for(int i=1; i<ND; i++)
 	rsq += x[i]*x[i];
