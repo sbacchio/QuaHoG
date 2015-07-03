@@ -42,6 +42,7 @@ SOURCES=\
 	qhg_spinor_field_io	\
 	qhg_spinor_field_bc	\
 	qhg_spinor_field_linalg	\
+	qhg_spinor_field_rms	\
 	qhg_nn_thrp		\
 	qhg_write_nn_thrp	\
 	qhg_write_mom_nn_thrp	\

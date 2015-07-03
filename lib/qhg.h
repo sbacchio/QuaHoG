@@ -28,6 +28,7 @@
 #include <qhg_spinor_field_io.h>
 #include <qhg_spinor_field_bc.h>
 #include <qhg_spinor_field_linalg.h>
+#include <qhg_spinor_field_rms.h>
 #include <qhg_nn_sequential_sink.h>
 #include <qhg_nn_thrp.h>
 #include <qhg_nn_thrp_defs.h>

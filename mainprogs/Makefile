@@ -11,7 +11,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = thrp
+DIRS = rms thrp
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done
