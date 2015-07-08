@@ -1,0 +1,6 @@
+AR=ar
+RANLIB=ranlib
+CC=cc
+CFLAGS=-O3 -D_GNU_SOURCE -I$(HOME)/koutsou/Eurohack/builds/tmLQCD/include -DQHG_ACC -h ipa5
+LDFLAGS=-L$(HOME)/koutsou/Eurohack/builds/tmLQCD/lib -L$(HOME)/koutsou/builds/local/lib -L$(HOME)/koutsou/builds/local/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -lm -llemon -llime 

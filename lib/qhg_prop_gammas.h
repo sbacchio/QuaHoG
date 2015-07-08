@@ -4,7 +4,7 @@
 #include <qhg_prop_gammas_decl.h>
 
 /* multiply prop by 1 from the left */
-static void
+static inline void
 prop_1_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -18,7 +18,7 @@ prop_1_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{1} from the right */
-static void
+static inline void
 prop_G_1(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -32,7 +32,7 @@ prop_G_1(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_0 from the left */
-static void
+static inline void
 prop_g0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -46,7 +46,7 @@ prop_g0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_0} from the right */
-static void
+static inline void
 prop_G_g0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -60,7 +60,7 @@ prop_G_g0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_x from the left */
-static void
+static inline void
 prop_gx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -74,7 +74,7 @@ prop_gx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_x} from the right */
-static void
+static inline void
 prop_G_gx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -88,7 +88,7 @@ prop_G_gx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_y from the left */
-static void
+static inline void
 prop_gy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -102,7 +102,7 @@ prop_gy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_y} from the right */
-static void
+static inline void
 prop_G_gy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -116,7 +116,7 @@ prop_G_gy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_z from the left */
-static void
+static inline void
 prop_gz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -130,7 +130,7 @@ prop_gz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_z} from the right */
-static void
+static inline void
 prop_G_gz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -144,7 +144,7 @@ prop_G_gz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_t from the left */
-static void
+static inline void
 prop_gt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -158,7 +158,7 @@ prop_gt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_t} from the right */
-static void
+static inline void
 prop_G_gt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -172,7 +172,7 @@ prop_G_gt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5 from the left */
-static void
+static inline void
 prop_g5_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -186,7 +186,7 @@ prop_g5_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5} from the right */
-static void
+static inline void
 prop_G_g5(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -200,7 +200,7 @@ prop_G_g5(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\gamma_0 from the left */
-static void
+static inline void
 prop_g5g0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -214,7 +214,7 @@ prop_g5g0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5\gamma_0} from the right */
-static void
+static inline void
 prop_G_g5g0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -228,7 +228,7 @@ prop_G_g5g0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\gamma_x from the left */
-static void
+static inline void
 prop_g5gx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -242,7 +242,7 @@ prop_g5gx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5\gamma_x} from the right */
-static void
+static inline void
 prop_G_g5gx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -256,7 +256,7 @@ prop_G_g5gx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\gamma_y from the left */
-static void
+static inline void
 prop_g5gy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -270,7 +270,7 @@ prop_g5gy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5\gamma_y} from the right */
-static void
+static inline void
 prop_G_g5gy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -284,7 +284,7 @@ prop_G_g5gy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\gamma_z from the left */
-static void
+static inline void
 prop_g5gz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -298,7 +298,7 @@ prop_g5gz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5\gamma_z} from the right */
-static void
+static inline void
 prop_G_g5gz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -312,7 +312,7 @@ prop_G_g5gz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\gamma_t from the left */
-static void
+static inline void
 prop_g5gt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -326,7 +326,7 @@ prop_g5gt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5\gamma_t} from the right */
-static void
+static inline void
 prop_G_g5gt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -340,7 +340,7 @@ prop_G_g5gt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C from the left */
-static void
+static inline void
 prop_C_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -354,7 +354,7 @@ prop_C_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C} from the right */
-static void
+static inline void
 prop_G_C(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -368,7 +368,7 @@ prop_G_C(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_5 from the left */
-static void
+static inline void
 prop_Cg5_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -382,7 +382,7 @@ prop_Cg5_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_5} from the right */
-static void
+static inline void
 prop_G_Cg5(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -396,7 +396,7 @@ prop_G_Cg5(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_x from the left */
-static void
+static inline void
 prop_Cgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -410,7 +410,7 @@ prop_Cgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_x} from the right */
-static void
+static inline void
 prop_G_Cgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -424,7 +424,7 @@ prop_G_Cgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_y from the left */
-static void
+static inline void
 prop_Cgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -438,7 +438,7 @@ prop_Cgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_y} from the right */
-static void
+static inline void
 prop_G_Cgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -452,7 +452,7 @@ prop_G_Cgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_z from the left */
-static void
+static inline void
 prop_Cgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -466,7 +466,7 @@ prop_Cgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_z} from the right */
-static void
+static inline void
 prop_G_Cgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -480,7 +480,7 @@ prop_G_Cgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_t from the left */
-static void
+static inline void
 prop_Cgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -494,7 +494,7 @@ prop_Cgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_t} from the right */
-static void
+static inline void
 prop_G_Cgt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -508,7 +508,7 @@ prop_G_Cgt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5\sigma_{t,x} = -0.5\gamma_5[\gamma_t, \gamma_x] from the left */
-static void
+static inline void
 prop_g5sitx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -522,7 +522,7 @@ prop_g5sitx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{t,x} = -0.5\gamma_5[\gamma_t, \gamma_x]} from the right */
-static void
+static inline void
 prop_G_g5sitx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -536,7 +536,7 @@ prop_G_g5sitx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{t,y} = -0.5\gamma_5[\gamma_t, \gamma_y] from the left */
-static void
+static inline void
 prop_g5sity_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -550,7 +550,7 @@ prop_g5sity_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{t,y} = -0.5\gamma_5[\gamma_t, \gamma_y]} from the right */
-static void
+static inline void
 prop_G_g5sity(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -564,7 +564,7 @@ prop_G_g5sity(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{t,z} = -0.5\gamma_5[\gamma_t, \gamma_z] from the left */
-static void
+static inline void
 prop_g5sitz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -578,7 +578,7 @@ prop_g5sitz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{t,z} = -0.5\gamma_5[\gamma_t, \gamma_z]} from the right */
-static void
+static inline void
 prop_G_g5sitz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -592,7 +592,7 @@ prop_G_g5sitz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{0,x} = -0.5\gamma_5[\gamma_0, \gamma_x] from the left */
-static void
+static inline void
 prop_g5si0x_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -606,7 +606,7 @@ prop_g5si0x_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{0,x} = -0.5\gamma_5[\gamma_0, \gamma_x]} from the right */
-static void
+static inline void
 prop_G_g5si0x(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -620,7 +620,7 @@ prop_G_g5si0x(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{0,y} = -0.5\gamma_5[\gamma_0, \gamma_y] from the left */
-static void
+static inline void
 prop_g5si0y_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -634,7 +634,7 @@ prop_g5si0y_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{0,y} = -0.5\gamma_5[\gamma_0, \gamma_y]} from the right */
-static void
+static inline void
 prop_G_g5si0y(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -648,7 +648,7 @@ prop_G_g5si0y(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{0,z} = -0.5\gamma_5[\gamma_0, \gamma_z] from the left */
-static void
+static inline void
 prop_g5si0z_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -662,7 +662,7 @@ prop_g5si0z_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{0,z} = -0.5\gamma_5[\gamma_0, \gamma_z]} from the right */
-static void
+static inline void
 prop_G_g5si0z(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -676,7 +676,7 @@ prop_G_g5si0z(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{x,y} = -0.5\gamma_5[\gamma_x, \gamma_y] from the left */
-static void
+static inline void
 prop_g5sixy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -690,7 +690,7 @@ prop_g5sixy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{x,y} = -0.5\gamma_5[\gamma_x, \gamma_y]} from the right */
-static void
+static inline void
 prop_G_g5sixy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -704,7 +704,7 @@ prop_G_g5sixy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{x,z} = -0.5\gamma_5[\gamma_x, \gamma_z] from the left */
-static void
+static inline void
 prop_g5sixz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -718,7 +718,7 @@ prop_g5sixz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{x,z} = -0.5\gamma_5[\gamma_x, \gamma_z]} from the right */
-static void
+static inline void
 prop_G_g5sixz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -732,7 +732,7 @@ prop_G_g5sixz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{y,z} = -0.5\gamma_5[\gamma_y, \gamma_z] from the left */
-static void
+static inline void
 prop_g5siyz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -746,7 +746,7 @@ prop_g5siyz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{y,z} = -0.5\gamma_5[\gamma_y, \gamma_z]} from the right */
-static void
+static inline void
 prop_G_g5siyz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -760,7 +760,7 @@ prop_G_g5siyz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{x,t} = -0.5\gamma_5[\gamma_x, \gamma_t] from the left */
-static void
+static inline void
 prop_g5sixt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -774,7 +774,7 @@ prop_g5sixt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{x,t} = -0.5\gamma_5[\gamma_x, \gamma_t]} from the right */
-static void
+static inline void
 prop_G_g5sixt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -788,7 +788,7 @@ prop_G_g5sixt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{y,t} = -0.5\gamma_5[\gamma_y, \gamma_t] from the left */
-static void
+static inline void
 prop_g5siyt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -802,7 +802,7 @@ prop_g5siyt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{y,t} = -0.5\gamma_5[\gamma_y, \gamma_t]} from the right */
-static void
+static inline void
 prop_G_g5siyt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -816,7 +816,7 @@ prop_G_g5siyt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{z,t} = -0.5\gamma_5[\gamma_z, \gamma_t] from the left */
-static void
+static inline void
 prop_g5sizt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -830,7 +830,7 @@ prop_g5sizt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{z,t} = -0.5\gamma_5[\gamma_z, \gamma_t]} from the right */
-static void
+static inline void
 prop_G_g5sizt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -844,7 +844,7 @@ prop_G_g5sizt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{x,0} = -0.5\gamma_5[\gamma_x, \gamma_0] from the left */
-static void
+static inline void
 prop_g5six0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -858,7 +858,7 @@ prop_g5six0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{x,0} = -0.5\gamma_5[\gamma_x, \gamma_0]} from the right */
-static void
+static inline void
 prop_G_g5six0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -872,7 +872,7 @@ prop_G_g5six0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{y,0} = -0.5\gamma_5[\gamma_y, \gamma_0] from the left */
-static void
+static inline void
 prop_g5siy0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -886,7 +886,7 @@ prop_g5siy0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{y,0} = -0.5\gamma_5[\gamma_y, \gamma_0]} from the right */
-static void
+static inline void
 prop_G_g5siy0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -900,7 +900,7 @@ prop_G_g5siy0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{z,0} = -0.5\gamma_5[\gamma_z, \gamma_0] from the left */
-static void
+static inline void
 prop_g5siz0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -914,7 +914,7 @@ prop_g5siz0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{z,0} = -0.5\gamma_5[\gamma_z, \gamma_0]} from the right */
-static void
+static inline void
 prop_G_g5siz0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -928,7 +928,7 @@ prop_G_g5siz0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{y,x} = -0.5\gamma_5[\gamma_y, \gamma_x] from the left */
-static void
+static inline void
 prop_g5siyx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -942,7 +942,7 @@ prop_g5siyx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{y,x} = -0.5\gamma_5[\gamma_y, \gamma_x]} from the right */
-static void
+static inline void
 prop_G_g5siyx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -956,7 +956,7 @@ prop_G_g5siyx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{z,x} = -0.5\gamma_5[\gamma_z, \gamma_x] from the left */
-static void
+static inline void
 prop_g5sizx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -970,7 +970,7 @@ prop_g5sizx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{z,x} = -0.5\gamma_5[\gamma_z, \gamma_x]} from the right */
-static void
+static inline void
 prop_G_g5sizx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -984,7 +984,7 @@ prop_G_g5sizx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by \gamma_5\sigma_{z,y} = -0.5\gamma_5[\gamma_z, \gamma_y] from the left */
-static void
+static inline void
 prop_g5sizy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -998,7 +998,7 @@ prop_g5sizy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by ar{\gamma_5\sigma_{z,y} = -0.5\gamma_5[\gamma_z, \gamma_y]} from the right */
-static void
+static inline void
 prop_G_g5sizy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1012,7 +1012,7 @@ prop_G_g5sizy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC
 }
 
 /* multiply prop by (1+\gamma_0) from the left */
-static void
+static inline void
 prop_1pg0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1026,7 +1026,7 @@ prop_1pg0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1+\gamma_0)} from the right */
-static void
+static inline void
 prop_G_1pg0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1040,7 +1040,7 @@ prop_G_1pg0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1+\gamma_x) from the left */
-static void
+static inline void
 prop_1pgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1054,7 +1054,7 @@ prop_1pgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1+\gamma_x)} from the right */
-static void
+static inline void
 prop_G_1pgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1068,7 +1068,7 @@ prop_G_1pgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1+\gamma_y) from the left */
-static void
+static inline void
 prop_1pgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1082,7 +1082,7 @@ prop_1pgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1+\gamma_y)} from the right */
-static void
+static inline void
 prop_G_1pgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1096,7 +1096,7 @@ prop_G_1pgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1+\gamma_z) from the left */
-static void
+static inline void
 prop_1pgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1110,7 +1110,7 @@ prop_1pgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1+\gamma_z)} from the right */
-static void
+static inline void
 prop_G_1pgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1124,7 +1124,7 @@ prop_G_1pgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1+\gamma_t) from the left */
-static void
+static inline void
 prop_1pgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1138,7 +1138,7 @@ prop_1pgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1+\gamma_t)} from the right */
-static void
+static inline void
 prop_G_1pgt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1152,7 +1152,7 @@ prop_G_1pgt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1-\gamma_0) from the left */
-static void
+static inline void
 prop_1mg0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1166,7 +1166,7 @@ prop_1mg0_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1-\gamma_0)} from the right */
-static void
+static inline void
 prop_G_1mg0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1180,7 +1180,7 @@ prop_G_1mg0(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1-\gamma_x) from the left */
-static void
+static inline void
 prop_1mgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1194,7 +1194,7 @@ prop_1mgx_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1-\gamma_x)} from the right */
-static void
+static inline void
 prop_G_1mgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1208,7 +1208,7 @@ prop_G_1mgx(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1-\gamma_y) from the left */
-static void
+static inline void
 prop_1mgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1222,7 +1222,7 @@ prop_1mgy_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1-\gamma_y)} from the right */
-static void
+static inline void
 prop_G_1mgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1236,7 +1236,7 @@ prop_G_1mgy(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1-\gamma_z) from the left */
-static void
+static inline void
 prop_1mgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1250,7 +1250,7 @@ prop_1mgz_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1-\gamma_z)} from the right */
-static void
+static inline void
 prop_G_1mgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1264,7 +1264,7 @@ prop_G_1mgz(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by (1-\gamma_t) from the left */
-static void
+static inline void
 prop_1mgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)
@@ -1278,7 +1278,7 @@ prop_1mgt_G(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{(1-\gamma_t)} from the right */
-static void
+static inline void
 prop_G_1mgt(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])
 {
   for(int i=0; i<NC*NS; i++)

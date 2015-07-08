@@ -1,0 +1,6 @@
+AR=ar
+RANLIB=ranlib
+CC=cc -VH15.7
+CFLAGS=-acc -mp -Mcuda=6.5,ptxinfo -Minfo=all -fastsse -Minline -D_GNU_SOURCE -I$(HOME)/koutsou/Eurohack/pgicc/builds/tmLQCD/include -DQHG_ACC -DQHG_OMP
+LDFLAGS=-L$(HOME)/koutsou/Eurohack/pgicc/builds/tmLQCD/lib -L$(HOME)/koutsou/Eurohack/pgicc/local/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -lm -llime 
