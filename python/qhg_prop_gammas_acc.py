@@ -169,7 +169,7 @@ for elem in gammas:
     mat = elem["mat"]
     for i,side in enumerate(["left", "right"]):
         code += "/* multiply prop by %s from the %s */\n" % (doc if side == "left" else "\bar{%s}" % doc, side)
-        code += "static void\n"
+        code += "static void inline\n"
         nn = "%s_%s" % ((name, "G") if i == 0 else ("G", name))
         code += "prop_%s(_Complex double out[NS*NC][NS*NC], _Complex double in[NS*NC][NS*NC])\n{\n" % nn
         #
