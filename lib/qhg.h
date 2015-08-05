@@ -22,6 +22,9 @@
 #include <qhg_mesons.h>
 #include <qhg_write_mesons.h>
 #include <qhg_write_mom_mesons.h>
+#include <qhg_mesons_udsc.h>
+#include <qhg_write_mesons_udsc.h>
+#include <qhg_write_mom_mesons_udsc.h>
 #include <qhg_nucleons.h>
 #include <qhg_write_nucleons.h>
 #include <qhg_write_mom_nucleons.h>
