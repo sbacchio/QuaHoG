@@ -1,15 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define QHG_MEMALIGN 64
+
 /*
  * Malloc, with minimal error handling
  */
 void *
 qhg_alloc(size_t size)
 {
-  void *ptr = malloc(size);
+  void *ptr;
+  posix_memalign(&ptr, QHG_MEMALIGN, size);
   if(ptr == NULL) {
-    fprintf(stderr, " malloc() returned NULL. Out of memory?\n");
+    fprintf(stderr, " posix_memalign(&ptr, %d, %d) returned NULL. Out of memory?\n", QHG_MEMALIGN, size);
     exit(-1);
   }
   return ptr;
