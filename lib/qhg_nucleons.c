@@ -10,10 +10,88 @@
 #include <qhg_correlator.h>
 #include <qhg_prop_gammas.h>
 #include <qhg_prop_ops.h>
+#include <qhg_spinmat_ops.h>
 #include <qhg_nucleon_defs.h>
 
+static void
+nucleon(_Complex double corr[4][NS][NS], _Complex double (*x)[NC*NS],
+	_Complex double (*y)[NC*NS])
+{
+  _Complex double z[NS*NC][NS*NC];
+  _Complex double aux[NS*NC][NS*NC];  
+  _Complex double A[NS][NS], B[NS][NS];
+      
+  /*
+   * \chi_1 - to - \chi_1
+   */
+  _Complex double Cg5xCg5[NS*NC][NS*NC];
+  prop_Cg5_G(aux, x);
+  prop_G_Cg5(Cg5xCg5, aux);
+  prop_contract_02(z, Cg5xCg5, y);       
+  prop_color_transpose(z);
+  prop_mul_gtr(aux, y, z);
+  prop_color_trace(A, aux);
+  prop_mul_gg(aux, y, z);
+  prop_color_trace(B, aux);
+  spinmat_add_ss(corr[0], A, B);
+  
+  /*
+   * \chi_1 - to - \chi_2
+   */
+  _Complex double yg5[NS*NC][NS*NC];
+  prop_G_g5(yg5, y);
+  _Complex double Cg5xC[NS*NC][NS*NC];
+  prop_Cg5_G(aux, x);
+  prop_G_C(Cg5xC, aux);
+  prop_contract_13(z, Cg5xC, y);
+  prop_transpose(z);
+  prop_mul_gtr(aux, yg5, z);
+  prop_color_trace(A, aux);
+  prop_mul_gg(aux, z, yg5);
+  prop_color_trace(B, aux);
+  spinmat_add_ss(corr[1], A, B);
+
+  /*
+   * \chi_2 - to - \chi_1
+   */
+  _Complex double g5y[NS*NC][NS*NC];
+  prop_g5_G(g5y, y);
+  _Complex double CxCg5[NS*NC][NS*NC];
+  prop_G_Cg5(aux, x);
+  prop_C_G(CxCg5, aux);
+  prop_contract_02(z, CxCg5, y);
+  prop_color_transpose(z);
+  prop_mul_gtr(aux, g5y, z);
+  prop_color_trace(A, aux);
+  prop_mul_gg(aux, g5y, z);
+  prop_color_trace(B, aux);
+  spinmat_add_ss(corr[2], A, B);
+
+  /*
+   * \chi_2 - to - \chi_2
+   */
+  _Complex double g5yg5[NS*NC][NS*NC];
+  prop_g5_G(g5yg5, yg5);
+  _Complex double CxC[NS*NC][NS*NC];
+  _Complex double w[NS*NC][NS*NC];
+  prop_G_C(aux, x);
+  prop_C_G(CxC, aux);
+  prop_contract_02(z, CxC, y);
+  prop_contract_02(w, CxC, yg5);
+  prop_color_transpose(z);
+  prop_color_transpose(w);
+  prop_mul_gtr(aux, g5yg5, z);
+  prop_color_trace(A, aux);
+  prop_mul_gg(aux, g5y, w);
+  prop_color_trace(B, aux);
+  spinmat_add_ss(corr[3], A, B);
+  
+  return;
+}
+
 qhg_correlator
-qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int source_coords[ND])
+qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC],
+	     int source_coords[ND])
 {
   qhg_lattice *lat = sp_u[0].lat;
   qhg_correlator corr = qhg_correlator_init(SITE_SIZE, lat);  
@@ -44,135 +122,16 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
       prop_scale(sp_u[0].bc[0], U);
       prop_scale(sp_d[0].bc[0], D);
     }
-      
+    
     _Complex double (*P[2])[NC*NS] = {U, D};
     for(int iflav=0; iflav<NFLAV; iflav++) {
-      _Complex double (*y)[NC*NS] = P[(iflav+0)%2];
-      _Complex double (*x)[NC*NS] = P[(iflav+1)%2];
-      _Complex double z[NS*NC][NS*NC];
-      _Complex double aux[NS*NC][NS*NC];  
-      _Complex double A[NS][NS], B[NS][NS];
-      
-      /*
-       * \chi_1 - to - \chi_1
-       */
-      _Complex double Cg5xCg5[NS*NC][NS*NC];
-      prop_Cg5_G(aux, x);
-      prop_G_Cg5(Cg5xCg5, aux);
-      prop_contract_02(z, Cg5xCg5, y);
-
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++){
-	  A[s0][s1] = 0.;
-	  B[s0][s1] = 0.;
-	}
-	  
-      for(int c1=0; c1<NC; c1++)
-	for(int c0=0; c0<NC; c0++)
-	  for(int s0=0; s0<NS; s0++)
-	    for(int s1=0; s1<NS; s1++)
-	      for(int s2=0; s2<NS; s2++) {
-		A[s0][s1] += y[CS(s0,c0)][CS(s1,c1)]*z[CS(s2,c0)][CS(s2,c1)];
-		B[s0][s1] += y[CS(s0,c0)][CS(s2,c1)]*z[CS(s2,c0)][CS(s1,c1)];		
-	      }
-      
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++) {
-	  corr.C[NIDX(v, iflav, 0, s0, s1)] = A[s0][s1] + B[s0][s1];
-	}
-
-      /*
-       * \chi_1 - to - \chi_2
-       */
-      _Complex double yg5[NS*NC][NS*NC];
-      prop_G_g5(yg5, y);
-      _Complex double Cg5xC[NS*NC][NS*NC];
-      prop_Cg5_G(aux, x);
-      prop_G_C(Cg5xC, aux);
-      prop_contract_13(z, Cg5xC, y);
-
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++){
-	  A[s0][s1] = 0.;
-	  B[s0][s1] = 0.;
-	}
-	  
-      for(int c1=0; c1<NC; c1++)
-	for(int c0=0; c0<NC; c0++)
-	  for(int s0=0; s0<NS; s0++)
-	    for(int s1=0; s1<NS; s1++)
-	      for(int s2=0; s2<NS; s2++) {
-		A[s0][s1] += yg5[CS(s0,c0)][CS(s1,c1)]*z[CS(s2,c0)][CS(s2,c1)];
-		B[s0][s1] += yg5[CS(s2,c0)][CS(s1,c1)]*z[CS(s2,c0)][CS(s0,c1)];		
-	      }
-      
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++) {
-	  corr.C[NIDX(v, iflav, 1, s0, s1)] = A[s0][s1] + B[s0][s1];
-	}
-
-      /*
-       * \chi_2 - to - \chi_1
-       */
-      _Complex double g5y[NS*NC][NS*NC];
-      prop_g5_G(g5y, y);
-      _Complex double CxCg5[NS*NC][NS*NC];
-      prop_G_Cg5(aux, x);
-      prop_C_G(CxCg5, aux);
-      prop_contract_02(z, CxCg5, y);
-
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++){
-	  A[s0][s1] = 0.;
-	  B[s0][s1] = 0.;
-	}
-	  
-      for(int c1=0; c1<NC; c1++)
-	for(int c0=0; c0<NC; c0++)
-	  for(int s0=0; s0<NS; s0++)
-	    for(int s1=0; s1<NS; s1++)
-	      for(int s2=0; s2<NS; s2++) {
-		A[s0][s1] += g5y[CS(s0,c0)][CS(s1,c1)]*z[CS(s2,c0)][CS(s2,c1)];
-		B[s0][s1] += g5y[CS(s0,c0)][CS(s2,c1)]*z[CS(s2,c0)][CS(s1,c1)];		
-	      }
-      
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++) {
-	  corr.C[NIDX(v, iflav, 2, s0, s1)] = A[s0][s1] + B[s0][s1];
-	}
-
-
-      /*
-       * \chi_2 - to - \chi_2
-       */
-      _Complex double g5yg5[NS*NC][NS*NC];
-      prop_g5_G(g5yg5, yg5);
-      _Complex double CxC[NS*NC][NS*NC];
-      _Complex double w[NS*NC][NS*NC];
-      prop_G_C(aux, x);
-      prop_C_G(CxC, aux);
-      prop_contract_02(z, CxC, y);
-      prop_contract_02(w, CxC, yg5);
-
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++){
-	  A[s0][s1] = 0.;
-	  B[s0][s1] = 0.;
-	}
-	  
-      for(int c1=0; c1<NC; c1++)
-	for(int c0=0; c0<NC; c0++)
-	  for(int s0=0; s0<NS; s0++)
-	    for(int s1=0; s1<NS; s1++)
-	      for(int s2=0; s2<NS; s2++) {
-		A[s0][s1] += g5yg5[CS(s0,c0)][CS(s1,c1)]*z[CS(s2,c0)][CS(s2,c1)];
-		B[s0][s1] += g5y[CS(s0,c0)][CS(s2,c1)]*w[CS(s2,c0)][CS(s1,c1)];		
-	      }
-      
-      for(int s0=0; s0<NS; s0++)
-	for(int s1=0; s1<NS; s1++) {
-	  corr.C[NIDX(v, iflav, 3, s0, s1)] = A[s0][s1] + B[s0][s1];
-	}
+      _Complex double c[4][NS][NS];
+      nucleon(c, P[iflav], P[(iflav+1)%2]);
+      for(int i=0; i<4; i++)
+	for(int s0=0; s0<NS; s0++)
+	  for(int s1=0; s1<NS; s1++) {
+	    corr.C[NIDX(v, iflav, i, s0, s1)] = c[i][s0][s1];
+	  }
     }
   }
   
