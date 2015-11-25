@@ -1,0 +1,6 @@
+AR=ar
+RANLIB=ranlib
+CC=cc
+CFLAGS=-O3 -std=c99 -openmp -D_GNU_SOURCE -I$(HOME)/cori-build/tmLQCD/include -I$(HDF5_DIR)/include
+LDFLAGS=-L$(HOME)/cori-build/tmLQCD/lib -L$(HOME)/cori-install/lib -L$(HOME)/cori-install/lib -L$(HDF5_DIR)/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -mkl -lm -llemon -llime -lifcore -limf -lhdf5
