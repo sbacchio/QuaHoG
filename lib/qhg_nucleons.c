@@ -14,8 +14,8 @@
 #include <qhg_nucleon_defs.h>
 
 static void
-nucleon(_Complex double corr[4][NS][NS], _Complex double (*x)[NC*NS],
-	_Complex double (*y)[NC*NS])
+nucleon(_Complex double corr[4][NS][NS], _Complex double (*y)[NC*NS],
+	_Complex double (*x)[NC*NS])
 {
   _Complex double z[NS*NC][NS*NC];
   _Complex double aux[NS*NC][NS*NC];  
