@@ -106,7 +106,7 @@ def nproj_toh5(fname, outname, root):
         moms = np.array([x[1] for x in data.keys()])
         max_qsq = max((moms**2).sum(axis=1))
         mvec = get_moms(max_qsq)
-        for flv in nucl_flvs:
+        for flv in ["ppm", "pmm"]:
             for d in ["fwd", "bwd"]:
                 for msq in sorted(set(mvec[:,0])):
                     grp_name = "%s/1-1/%s/msq%04d/" % (flv, d, msq)
