@@ -1,6 +1,6 @@
 from __future__ import print_function
 import re
-import getopt
+import argparse
 import numpy as np
 import h5py
 import sys
@@ -66,15 +66,12 @@ def project(arr, flav):
     shape = arr.shape
     T = shape[0]
     arr = arr.reshape([-1, NS, NS])
-    fwd = np.array(list(map(lambda x: tw.dot(x.dot(gproj[0].dot(tw))), arr))).trace(1,2)
-    bwd = np.array(list(map(lambda x: tw.dot(x.dot(gproj[1].dot(tw))), arr))).trace(1,2)
+    fwd = np.array(list(map(lambda x: x.dot(tw.dot(gproj[0].dot(tw))).trace(), arr)))
+    bwd = np.array(list(map(lambda x: x.dot(tw.dot(gproj[1].dot(tw))).trace(), arr)))
     # back to original shape
     fwd = fwd.reshape(shape[:-2])
     bwd = bwd.reshape(shape[:-2])
     # reverse "bwd"
-    t0 = np.arange(T, dtype=int)
-    tm = (T - t0) % T
-    bwd = bwd[tm,:]
     return {"fwd": fwd, "bwd": bwd}
         
 def init_proj_h5file(outname, fname):
@@ -98,44 +95,14 @@ def write_dset(fname, grp_name, arr, mvec):
         grp.create_dataset('mvec', mvec.shape, dtype=mvec.dtype, data=mvec)
     return        
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-def main(argv=None):
-    # defaults
-    output = None
-    if argv is None:
-        argv = sys.argv
-        usage =  " Usage: %s [OPTIONS] FNAME" % argv[0]
-    try:
-        try:
-            opts, args = getopt.getopt(argv[1:], "ho:", ["help", "output="])
-        except getopt.GetoptError as msg:
-            raise Usage(msg)
-
-        for o, a in opts:
-            if o in ["-h", "--help"]:
-                print((usage), file=sys.stderr)
-                print((" Options:"), file=sys.stderr)
-                print(("  -o, --output=F\t: Write to file F (default: FNAME.proj)"), file=sys.stderr)
-                print(("  -h, --help\t\t: This help message"), file=sys.stderr)
-                print 
-                return 2
-            elif o in ["-o", "--output"]:
-                output = a
-            else:
-                print((" %s: ignoring unhandled option" % o), file=sys.stderr)
-
-        if len(args) != 1:
-            raise Usage(usage)
-
-    except Usage as err:
-        print((err.msg), file=sys.stderr)
-        print((" for help use --help"), file=sys.stderr)
-        return 2
-
-    fname = args[0]
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("FNAME", type=str, help="input file name")
+    parser.add_argument("-o", "--output", metavar="F", type=str, default=None,
+                        help="output file name (default: FNAME.proj)")
+    args = parser.parse_args()
+    fname = args.FNAME
+    output = args.output    
     if output is None:
         output = fname + ".proj"
     names = get_dset_names(fname)

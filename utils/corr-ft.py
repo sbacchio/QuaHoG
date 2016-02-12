@@ -1,5 +1,5 @@
 from __future__ import print_function
-import getopt
+import argparse
 import numpy as np
 import h5py
 import sys
@@ -25,8 +25,8 @@ def get_origin(fname):
         origin = fp.attrs['Origin']
         # infer whether this file is a three-point function file by
         # inspecting whether it has an attribute "Sink-source
-        # separation". If so, set time-component of origin to zero,
-        # since it is already shifted
+        # separation". If so, set the time-component of origin to
+        # zero, since it is already shifted
         if "Sink-source separation" in list(fp.attrs.keys()):
             origin[0] = 0
     return origin
@@ -62,52 +62,25 @@ def write_dset(fname, grp_name, arr):
         grp.create_dataset('mvec', arr['mom'].shape, dtype=arr['mom'].dtype, data=arr['mom'])
     return        
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-def main(argv=None):
-    # defaults
-    output = None
+def main():
     root = "/"
     max_msq = 24
-    if argv is None:
-        argv = sys.argv
-        usage =  " Usage: %s [OPTIONS] FNAME" % argv[0]        
-    try:
-        try:
-            opts, args = getopt.getopt(argv[1:], "ho:m:r:", ["help", "output=", "root=", "max-msq="])
-        except getopt.GetoptError as msg:
-            raise Usage(msg)
-
-        for o, a in opts:
-            if o in ["-h", "--help"]:
-                print((usage), file=sys.stderr)
-                print((" Options:"), file=sys.stderr)
-                print(("  -o, --output=F\t: Write to file F (default: FNAME.mom)"), file=sys.stderr)
-                print(("  -m, --max-msq=Q\t: Write out to max momentum squared Q (default: %d)" % max_msq), file=sys.stderr)
-                print(("  -r, --root=R\t\t: HDF5 file top group (default: %s)" % root), file=sys.stderr)
-                print(("  -h, --help\t\t: This help message"), file=sys.stderr)
-                print 
-                return 2
-            elif o in ["-o", "--output"]:
-                output = a
-            elif o in ["-r", "--root"]:
-                root = a
-            elif o in ["-m", "--max-msq"]:
-                max_msq = a
-            else:
-                print((" %s: ignoring unhandled option" % o), file=sys.stderr)
-
-        if len(args) != 1:
-            raise Usage(usage)
-
-    except Usage as err:
-        print((err.msg), file=sys.stderr)
-        print((" for help use --help"), file=sys.stderr)
-        return 2
-
-    fname = args[0]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("FNAME", type=str)
+    parser.add_argument("-o", "--output", metavar="F", type=str,
+                        help="output file name (default: FNAME.mom)")
+    parser.add_argument("-r", "--root", metavar="R", type=str, default=root,
+                        help="HDF5 file top group (default: %s)" % root)
+    parser.add_argument("-m", "--max-msq", metavar="Q", type=int, default=max_msq,
+                        help="Write out up to max momentum squared Q (default: %d)" % max_msq)
+    parser.add_argument("-i", "--inverse-ft", action='store_true', default=False,
+                        help="Perform inverse fourier transform")    
+    args = parser.parse_args()
+    fname = args.FNAME
+    output = args.output
+    root = args.root
+    inverse_ft = args.inverse_ft
+    max_msq = args.max_msq
     if output is None:
         output = fname + ".mom"
         
@@ -123,7 +96,10 @@ def main(argv=None):
         for i in range(ND):
             sh = origin[i]
             corr = np.roll(corr, axis=i, shift=-sh)
-        coft = np.fft.fftn(corr, s=dims[1:ND], axes=(1,2,3))
+        if inverse_ft:
+            coft = np.fft.ifftn(corr, s=dims[1:ND], axes=(1,2,3))*np.prod(dims[1:ND])
+        else:
+            coft = np.fft.fftn(corr, s=dims[1:ND], axes=(1,2,3))
         trail_dims = coft.shape[ND:]
         if trail_dims == ():
             trail_dims = (1,)
@@ -153,6 +129,10 @@ def main(argv=None):
     top = root + "/" + pos
     # Pop the index order, it is irrelevant
     a.pop("IndexOrder")
+    # If there is a "Sink-source separation" attrib. put as next level group
+    if "Sink-source separation" in a.keys():
+        val = a["Sink-source separation"]
+        top = top + "/dt%02d" % val
     # If there is a "projector" attrib. put as next level group
     if "Projector" in a.keys():
         val = a["Projector"].decode()

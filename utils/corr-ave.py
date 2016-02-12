@@ -1,6 +1,6 @@
 from __future__ import print_function
 import re
-import getopt
+import argparse
 import numpy as np
 import h5py
 import sys
@@ -68,44 +68,15 @@ def write_dset(fname, grp_name, arr):
         grp.create_dataset('mvec', arr['mvec'].shape, dtype=arr['mvec'].dtype, data=arr['mvec'])
     return        
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-def main(argv=None):
-    # defaults
-    output = 'ave.h5'
-    if argv is None:
-        argv = sys.argv
-        usage =  " Usage: %s [OPTIONS] FNAME1 FNAME2 [FNAME3 [FNAME4 [...]]]" % argv[0]
-    try:
-        try:
-            opts, args = getopt.getopt(argv[1:], "ho:", ["help", "output="])
-        except getopt.GetoptError as msg:
-            raise Usage(msg)
-
-        for o, a in opts:
-            if o in ["-h", "--help"]:
-                print((usage), file=sys.stderr)
-                print((" Options:"), file=sys.stderr)
-                print(("  -o, --output=F\t: Write to file F (default: %s)" % output), file=sys.stderr)
-                print(("  -h, --help\t\t: This help message"), file=sys.stderr)
-                print 
-                return 2
-            elif o in ["-o", "--output"]:
-                output = a
-            else:
-                print((" %s: ignoring unhandled option" % o), file=sys.stderr)
-
-        if len(args) < 2:
-            raise Usage(usage)
-
-    except Usage as err:
-        print((err.msg), file=sys.stderr)
-        print((" for help use --help"), file=sys.stderr)
-        return 2
-
-    fnames = args[:]
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("fn0", type=str, metavar="FNAME", help=argparse.SUPPRESS)
+    parser.add_argument("fn1", type=str, metavar="FNAME", nargs="+", help="two or more file names")
+    parser.add_argument("-o", "--output", metavar="F", type=str, default='ave.h5',
+                        help="output file name (default: ave.h5)")
+    args = parser.parse_args()
+    fnames = [args.fn0] + args.fn1
+    output = args.output    
     root = get_root(fnames)
     spos = get_src_pos(fnames, root)
     names = get_dset_names(fnames, root, spos)
