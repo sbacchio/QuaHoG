@@ -20,9 +20,9 @@ qhg_comms_init(qhg_lattice *lat)
   tmLQCD_mpi_params *mp = qhg_alloc(sizeof(tmLQCD_mpi_params));
   int ret = 0;
   ret = tmLQCD_get_lat_params(lp);
-  ret = tmLQCD_get_mpi_params(mp);
-
-  int ldims[ND] = {lp->T, lp->LX, lp->LY, lp->LZ};
+  ret = tmLQCD_get_mpi_params(mp);  
+  
+  int ldims[ND] = {lp->T, lp->LX, lp->LY, lp->LZ};  
   int procs[ND] = {mp->nproc_t, mp->nproc_x, mp->nproc_y, mp->nproc_z};
   int gdims[ND], lvol=1, gvol=1;
   for(int i=0; i<ND; i++) {
@@ -56,7 +56,7 @@ qhg_comms_init(qhg_lattice *lat)
 
 #ifdef QHG_OMP
   comms->nthreads = mp->omp_num_threads;
-  omp_set_num_threads(comms->nthreads);
+  omp_set_num_threads(comms->nthreads);  
 #pragma omp parallel
   {
     int ithr = omp_get_thread_num();

@@ -1,0 +1,6 @@
+AR=ar
+RANLIB=ranlib
+CC=cc
+CFLAGS=-D_GNU_SOURCE -I$(HOME)/tmLQCD/include 
+LDFLAGS=-L$(HOME)/tmLQCD/lib -L$(HOME)/loc-install/lib -L$(HOME)/loc-install/lib
+LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -lm -llemon -llime -lhdf5

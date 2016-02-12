@@ -65,7 +65,7 @@ libqhg.a: ${addsuffix .o, $(SOURCES)}
 %.o: %.c
 	$(E) CC $<
 	$(C)$(CC) $(CFLAGS) -c $< -o $@
-	$(C)$(CC) -MM $(CFLAGS) -c $< > $*.d
+	$(C)$(CC) -M $(CFLAGS) -c $< > $*.d
 
 clean:
 	$(E) CLEAN in $(PWD)
