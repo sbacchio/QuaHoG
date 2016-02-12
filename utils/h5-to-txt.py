@@ -186,7 +186,7 @@ def totxt_thrp(fname):
     with h5py.File(fname, "r") as fp:
         names = []
         fp.visititems(lambda x,t: names.append(x) if 'arr' in x and type(t) is h5py.Dataset else None)
-        top = "/".join(names[0].split("/")[:4])
+        top = "/".join(names[0].split("/")[:5])
         msqs = list(sorted(set([n.split("/")[-2] for n in names])))
         max_qsq = max(msqs)
         max_qsq = int(re.match('msq0*([1-9][0-9]*)', max_qsq).groups()[0])
