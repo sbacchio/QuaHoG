@@ -26,13 +26,21 @@ get_boundary(_Complex double *bnd, int dir, _Complex double *field, qhg_lattice 
     int fproc = lat->comms->neigh_proc[dir];
     int bproc = lat->comms->neigh_proc[dir+ND];
     if(sign > 0) {
-      MPI_Sendrecv(field, 1, bnd_collect, bproc, bproc,
-		   bnd, bvol*site_size, MPI_BYTE, fproc, proc_id, comm,
-		   MPI_STATUS_IGNORE);
+      MPI_Request req;
+      /* MPI_Sendrecv(field, 1, bnd_collect, bproc, bproc, */
+      /* 		   bnd, bvol*site_size, MPI_BYTE, fproc, proc_id, comm, */
+      /* 		   MPI_STATUS_IGNORE); */
+      MPI_Irecv(bnd, bvol*site_size, MPI_BYTE, fproc, proc_id, comm, &req);
+      MPI_Send(field, 1, bnd_collect, bproc, bproc, comm);
+      MPI_Wait(&req, MPI_STATUS_IGNORE);
     } else {
-      MPI_Sendrecv(field, 1, bnd_collect, fproc, fproc,
-		   bnd, bvol*site_size, MPI_BYTE, bproc, proc_id, comm,
-		   MPI_STATUS_IGNORE);
+      MPI_Request req;
+      /* MPI_Sendrecv(field, 1, bnd_collect, fproc, fproc, */
+      /* 		   bnd, bvol*site_size, MPI_BYTE, bproc, proc_id, comm, */
+      /* 		   MPI_STATUS_IGNORE); */
+      MPI_Irecv(bnd, bvol*site_size, MPI_BYTE, bproc, proc_id, comm, &req);
+      MPI_Send(field, 1, bnd_collect, fproc, fproc, comm);
+      MPI_Wait(&req, MPI_STATUS_IGNORE);
     }
     MPI_Type_free(&bnd_collect);
   }

@@ -112,9 +112,13 @@ get_boundary_edge(qhg_gauge_field gf, int dir)
     int proc_id = lat->comms->proc_id;
     int to = lat->comms->neigh_proc[(dir+ND) % (2*ND)];
     int from = lat->comms->neigh_proc[dir];
-    MPI_Sendrecv(gf.field, 1, bnd_edge_collect, to, to,
-		 gf.bnd[dir], 1, bnd_edge_put, from, proc_id, comm,
-		 MPI_STATUS_IGNORE);
+    MPI_Request req;
+    /* MPI_Sendrecv(gf.field, 1, bnd_edge_collect, to, to, */
+    /* 		 gf.bnd[dir], 1, bnd_edge_put, from, proc_id, comm, */
+    /* 		 MPI_STATUS_IGNORE); */
+    MPI_Irecv(gf.bnd[dir], 1, bnd_edge_put, from, proc_id, comm, &req);
+    MPI_Send(gf.field, 1, bnd_edge_collect, to, to, comm);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
     MPI_Type_free(&bnd_edge_collect);
     MPI_Type_free(&bnd_edge_put);    
   }
