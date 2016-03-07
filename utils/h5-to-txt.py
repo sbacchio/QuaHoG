@@ -208,9 +208,9 @@ def totxt_thrp(fname):
                     mom = data[msq,gam]["mvec"]
                     idx = mom.tolist().index(mv[1:])
                     reim = arr[t,idx]
-                    line = "  %2d %+d %+d %+d  %+e %+e %s" % (t, mv[1], mv[2], mv[3],
-                                                              reim.real, reim.imag,
-                                                              gam)
+                    line = "%2d %+d %+d %+d %+e %+e %s" % (t, mv[1], mv[2], mv[3],
+                                                           reim.real, reim.imag,
+                                                           gam)
                     lines.append(line)
         buf = "\n".join(lines) + "\n"
         return buf
