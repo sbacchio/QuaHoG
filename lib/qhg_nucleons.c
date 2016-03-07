@@ -12,6 +12,19 @@
 #include <qhg_prop_ops.h>
 #include <qhg_nucleon_defs.h>
 
+static void
+prop_bc(enum qhg_fermion_bc_time bc, _Complex double (*p)[NC*NS])
+{
+  switch(bc) {
+  case PERIODIC:
+    break;
+  case ANTIPERIODIC:
+    prop_scale(-1, p);
+    break;
+  }
+  return;
+}
+
 qhg_correlator
 qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int source_coords[ND])
 {
@@ -41,8 +54,8 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
     int t = v/lv3;
     int gt = t + t0;
     if(gt < tsrc) {
-      prop_scale(sp_u[0].bc[0], U);
-      prop_scale(sp_d[0].bc[0], D);
+      prop_bc(sp_u[0].bc, U);
+      prop_bc(sp_d[0].bc, D);
     }
       
     _Complex double (*P[2])[NC*NS] = {U, D};

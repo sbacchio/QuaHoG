@@ -12,6 +12,19 @@
 #include <qhg_prop_gammas.h>
 #include <qhg_meson_udsc_defs.h>
 
+static void
+prop_bc(enum qhg_fermion_bc_time bc, _Complex double (*p)[NC*NS])
+{
+  switch(bc) {
+  case PERIODIC:
+    break;
+  case ANTIPERIODIC:
+    prop_scale(-1, p);
+    break;
+  }
+  return;
+}
+
 qhg_correlator
 qhg_mesons_udsc(qhg_spinor_field light[2][NS*NC], qhg_spinor_field strange[2][NS*NC], qhg_spinor_field charm[2][NS*NC],
 		int source_coords[ND])
@@ -47,16 +60,14 @@ qhg_mesons_udsc(qhg_spinor_field light[2][NS*NC], qhg_spinor_field strange[2][NS
     int t = v/lv3;
     int gt = t + t0;
     if(gt < tsrc) {
-      prop_scale(light[0][0].bc[0], Q[0]);
-      prop_scale(light[1][0].bc[0], Q[1]);
-      
-      prop_scale(strange[0][0].bc[0], Q[2]);
-      prop_scale(strange[1][0].bc[0], Q[3]);
-      
-      prop_scale(charm[0][0].bc[0], Q[4]);
-      prop_scale(charm[1][0].bc[0], Q[5]);
+      prop_bc(light[0][0].bc, Q[0]);
+      prop_bc(light[1][0].bc, Q[1]);
+      prop_bc(strange[0][0].bc, Q[2]);
+      prop_bc(strange[1][0].bc, Q[3]);
+      prop_bc(charm[0][0].bc, Q[4]);
+      prop_bc(charm[1][0].bc, Q[5]);
     }
-    
+       
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
       for(int iflav0=0; iflav0<NFLAV; iflav0++) 
 	for(int iflav1=0; iflav1<NFLAV; iflav1++) {

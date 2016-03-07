@@ -9,11 +9,25 @@
 #include <qhg_alloc.h>
 #include <qhg_correlator.h>
 #include <qhg_xchange_spinor.h>
+#include <qhg_xchange_gauge.h>
 #include <qhg_prop_gammas.h>
 #include <qhg_prop_ops.h>
 #include <qhg_su3_ops.h>
 #include <qhg_io_utils.h>
 #include <qhg_nn_thrp_defs.h>
+
+static void
+prop_bc(enum qhg_fermion_bc_time bc, _Complex double (*p)[NC*NS])
+{
+  switch(bc) {
+  case PERIODIC:
+    break;
+  case ANTIPERIODIC:
+    prop_scale(-1, p);
+    break;
+  }
+  return;
+}
 
 qhg_correlator
 qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_field gf,
@@ -25,12 +39,13 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
   int **nn = lat->nn;
   for(int i=0; i<ND; i++)
     corr.origin[i] = source_coords[i];
-  int tsrc = corr.origin[0];  
   int Lt = lat->dims[0];
+  int tsrc = corr.origin[0];
+  int tsnk = (corr.origin[0] + thrp_sink.dt) % Lt;  
   int lv3 = lat->lv3;
   int lt = lat->ldims[0];
   int t0 = lat->ldims[0]*lat->comms->proc_coords[0];  
-
+  
   for(int i=0; i<NS*NC; i++) {
     qhg_xchange_spinor(bwd[i]);
     qhg_xchange_spinor(fwd[i]);
@@ -46,13 +61,14 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
     prop_load(F, fwd, v);
     prop_load(B, bwd, v);
 
-    int t = v/lv3;
-    int gt = t + t0;
-    if(gt < tsrc) {
-      prop_scale(fwd[0].bc[0], F);
-      prop_scale(bwd[0].bc[0], B);
+    if(t0 + v/lv3 < tsrc) {
+      prop_bc(fwd[0].bc, F);
     }
 
+    if(t0 + v/lv3 > tsnk) {
+      prop_bc(bwd[0].bc, B);
+    }
+    
     /* Local */
     for(int i=0; i<NLOC; i++) {
       _Complex double gF[NS*NC][NS*NC];          
@@ -146,24 +162,29 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(BP, bwd, vp);
       prop_load(BM, bwd, vm);
 
-      if(mu == 0) {
-	int t = v/lv3;
-	int gt0 = t + t0;			/* Global absolute insertion time */
-	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
-	if(gdt + tsrc + 1 >= Lt) {
-	  prop_scale(fwd[0].bc[0], FP);
-	  prop_scale(bwd[0].bc[0], BP);
-	}
+      if(t0 + v/lv3 < tsrc) {
+	prop_bc(fwd[0].bc, FP);
+	prop_bc(fwd[0].bc, FM);
+      }
+      
+      if(t0 + v/lv3 > tsnk) {
+	prop_bc(bwd[0].bc, BP);
+	prop_bc(bwd[0].bc, BM);
       }
 
       if(mu == 0) {
-	int t = v/lv3;
-	int gt0 = t + t0;			/* Global absolute insertion time */
-	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
-	if(gdt + tsrc - 1 < 0 || gdt + tsrc - 1 >= Lt) {
-	  prop_scale(fwd[0].bc[0], FM);
-	  prop_scale(bwd[0].bc[0], BM);
-	}
+	if(t0 + v/lv3 == Lt-1) {
+	  prop_bc(bwd[0].bc, BP); /* This negates the previous flipping of BP's sign */
+	  prop_bc(fwd[0].bc, FP); /* This catches the case when v is
+				     on the right side of the lattice,
+				     but vp is over the edge */
+	}	
+	if(t0 + v/lv3 == 0) {
+	  prop_bc(fwd[0].bc, FM); /* This negates the previous flipping of FM's sign */
+	  prop_bc(bwd[0].bc, BM); /* This catches the case when v is
+				     on the right side of the lattice,
+				     but vm is over the edge */
+	}	
       }
       
       switch(i) {
@@ -235,29 +256,33 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(FP, fwd, vp);
       prop_load(FM, fwd, vm);
       prop_load(BP, bwd, vp);
-      prop_load(BM, bwd, vm);
+      prop_load(BM, bwd, vm);      
 
-
-      if(mu == 0) {
-	int t = v/lv3;
-	int gt0 = t + t0;			/* Global absolute insertion time */
-	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
-	if(gdt + tsrc + 1 >= Lt) {
-	  prop_scale(fwd[0].bc[0], FP);
-	  prop_scale(bwd[0].bc[0], BP);
-	}
-      }
-
-      if(mu == 0) {
-	int t = v/lv3;
-	int gt0 = t + t0;			/* Global absolute insertion time */
-	int gdt = ((gt0 - tsrc) + Lt) % Lt;     /* Global sink-source separation  */
-	if(gdt + tsrc - 1 < 0 || gdt + tsrc - 1 >= Lt) {
-	  prop_scale(fwd[0].bc[0], FM);
-	  prop_scale(bwd[0].bc[0], BM);
-	}
+      if(t0 + v/lv3 < tsrc) {
+	prop_bc(fwd[0].bc, FP);
+	prop_bc(fwd[0].bc, FM);
       }
       
+      if(t0 + v/lv3 > tsnk) {
+	prop_bc(bwd[0].bc, BP);
+	prop_bc(bwd[0].bc, BM);
+      }
+
+      if(mu == 0) {
+	if(t0 + v/lv3 == Lt-1) {
+	  prop_bc(bwd[0].bc, BP); /* This negates the previous flipping of BP's sign */
+	  prop_bc(fwd[0].bc, FP); /* This catches the case when v is
+				     on the right side of the lattice,
+				     but vp is over the edge */
+	}	
+	if(t0 + v/lv3 == 0) {
+	  prop_bc(fwd[0].bc, FM); /* This negates the previous flipping of FM's sign */
+	  prop_bc(bwd[0].bc, BM); /* This catches the case when v is
+				     on the right side of the lattice,
+				     but vm is over the edge */
+	}	
+      }
+
       prop_mul_su3_U_G(T, FP, U0);
       prop_mul_gg(A0, T, B);      
 
