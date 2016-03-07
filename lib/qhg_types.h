@@ -4,6 +4,10 @@
 #include <mpi.h>
 #include <qhg_defs.h>
 
+enum qhg_fermion_bc_time {
+  PERIODIC,
+  ANTIPERIODIC
+};
 
 typedef struct {
   int proc_id;
@@ -45,7 +49,7 @@ typedef struct {
   _Complex double *field;
   _Complex double *bnd[2*ND];
   _Complex double *edge[2*ND][2*ND];
-  _Complex double *bc;
+  enum qhg_fermion_bc_time bc;
   qhg_lattice *lat;
 } qhg_spinor_field;
 

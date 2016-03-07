@@ -41,8 +41,23 @@ qhg_mesons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sourc
     int t = v/lv3;
     int gt = t + t0;
     if(gt < tsrc) {
-      prop_scale(sp_u[0].bc[0], U);
-      prop_scale(sp_d[0].bc[0], D);
+      
+      switch(sp_u[0].bc) {
+      case PERIODIC:
+	break;
+      case ANTIPERIODIC:
+	prop_scale(-1, U);
+	break;
+      }
+    
+      switch(sp_d[0].bc) {
+      case PERIODIC:
+	break;
+      case ANTIPERIODIC:
+	prop_scale(-1, U);
+	break;
+      }
+      
     }
     
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
