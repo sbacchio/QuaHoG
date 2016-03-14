@@ -1,6 +1,5 @@
 Makefile.in
-mainprogs/thrp/main
-mainprogs/rms/main
+tests/test-ildg-conf-reader/main
 *~
 *.a
 *.o
