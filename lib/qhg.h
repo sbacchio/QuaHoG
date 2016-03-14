@@ -14,6 +14,7 @@
 #include <qhg_xchange_gauge.h>
 #include <qhg_xchange_spinor.h>
 #include <qhg_import_gauge_field.h>
+#include <qhg_gauge_field_io.h>
 #include <qhg_point_spinor_field.h>
 #include <qhg_plaquette.h>
 #include <qhg_ape_smear.h>

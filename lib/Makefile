@@ -26,6 +26,7 @@ SOURCES=\
 	qhg_xchange_gauge		\
 	qhg_xchange_spinor		\
 	qhg_import_gauge_field		\
+	qhg_gauge_field_io		\
 	qhg_point_spinor_field		\
 	qhg_plaquette			\
 	qhg_mom_list			\
