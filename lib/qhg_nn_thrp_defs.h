@@ -1,6 +1,6 @@
 #ifndef _QHG_NN_THRP_DEFS_H
 #define _QHG_NN_THRP_DEFS_H 1
-
+#include <string.h>
 #define NLOC 16			// number of local operator directions
 #define NNOE 4			// number of noether operator directions
 #define NVDER ((4*(4+1))/2)	// number of vector-derivative directions
