@@ -3,6 +3,7 @@ Ly = 8
 Lz = 10
 T = 12
 
+ompnumthreads = 1
 NrXProcs = 3
 NrYProcs = 2
 NrZProcs = 5
