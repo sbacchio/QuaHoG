@@ -1,0 +1,8 @@
+Lx = 6
+Ly = 8
+Lz = 10
+T = 12
+
+NrXProcs = 3
+NrYProcs = 2
+NrZProcs = 5

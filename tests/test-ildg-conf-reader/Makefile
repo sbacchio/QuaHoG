@@ -4,13 +4,13 @@ ifndef V
        V = 0
 endif
 
-ifeq ($(V), 1) 
-	E = @echo > /dev/null
-	C = 
+ifeq ($(V), 1)
+       E = @echo > /dev/null
+       C =
 else
-	E = @echo
-	C = @
-	MAKE += --no-print-directory
+       E = @echo
+       C = @
+       MAKE += --no-print-directory
 endif
 
 TARGET = main
@@ -23,7 +23,7 @@ CFLAGS += -I$(LIBDIR)
 LDFLAGS += -L$(LIBDIR)
 LIBS := -lqhg $(LIBS)
 
-SOURCES = main 
+SOURCES = main
 
 $(TARGET): ${addsuffix .o, $(SOURCES)} lib
 	$(E) LD $@
@@ -43,5 +43,5 @@ clean:
 
 cleanall: clean
 	$(E) CLEANALL in $(PWD)
-	$(C)$(RM) $(TARGET) 
+	$(C)$(RM) $(TARGET)
 	$(C)$(MAKE) -C $(LIBDIR) cleanall

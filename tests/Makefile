@@ -11,7 +11,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = rms thrp
+DIRS = test-ildg-conf-reader 
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done
