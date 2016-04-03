@@ -114,7 +114,7 @@ def totxt_nucl(fname):
     with h5py.File(fname, "r") as fp:
         names = []
         fp.visititems(lambda x,t: names.append(x) if 'arr' in x and type(t) is h5py.Dataset else None)
-        top = "/".join(names[0].split("/")[:2])
+        top = "/".join(names[0].split("/")[:-4])
         msqs = list(sorted(set([n.split("/")[-2] for n in names])))
         max_qsq = max(msqs)
         max_qsq = int(re.match('msq0*([1-9][0-9]*)', max_qsq).groups()[0])
@@ -151,7 +151,7 @@ def totxt_meson(fname):
     with h5py.File(fname, "r") as fp:
         names = []
         fp.visititems(lambda x,t: names.append(x) if 'arr' in x and type(t) is h5py.Dataset else None)
-        top = "/".join(names[0].split("/")[:2])
+        top = "/".join(names[0].split("/")[:-4])
         msqs = list(sorted(set([n.split("/")[-2] for n in names])))
         max_qsq = max(msqs)
         max_qsq = int(re.match('msq0*([1-9][0-9]*)', max_qsq).groups()[0])
@@ -186,7 +186,7 @@ def totxt_thrp(fname):
     with h5py.File(fname, "r") as fp:
         names = []
         fp.visititems(lambda x,t: names.append(x) if 'arr' in x and type(t) is h5py.Dataset else None)
-        top = "/".join(names[0].split("/")[:5])
+        top = "/".join(names[0].split("/")[:-3])
         msqs = list(sorted(set([n.split("/")[-2] for n in names])))
         max_qsq = max(msqs)
         max_qsq = int(re.match('msq0*([1-9][0-9]*)', max_qsq).groups()[0])
@@ -208,9 +208,9 @@ def totxt_thrp(fname):
                     mom = data[msq,gam]["mvec"]
                     idx = mom.tolist().index(mv[1:])
                     reim = arr[t,idx]
-                    line = "%2d %+d %+d %+d %+e %+e %s" % (t, mv[1], mv[2], mv[3],
-                                                           reim.real, reim.imag,
-                                                           gam)
+                    line = "  %2d %+d %+d %+d  %+e %+e %s" % (t, mv[1], mv[2], mv[3],
+                                                              reim.real, reim.imag,
+                                                              gam)
                     lines.append(line)
         buf = "\n".join(lines) + "\n"
         return buf

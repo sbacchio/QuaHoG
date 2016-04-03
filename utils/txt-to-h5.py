@@ -125,15 +125,15 @@ def nproj_toh5(fname, outname, root):
 def nucleon_toh5(fname, outname, root):
     data = {}
     def parse_line(line):
-        x = line.split()
-        if x == []:
+        spl = line.split()
+        if spl == []:
             return None
-        t = int(x[0])
-        mom = tuple(map(int, x[1:4]))
-        reim = np.array(list(map(float, x[4:12]))).reshape([-1,2])
+        t = int(spl[0])
+        mom = tuple(map(int, spl[1:4]))
+        reim = np.array(list(map(float, spl[4:12]))).reshape([-1,2])
         reim = np.array([complex(*x) for x in reim]).reshape([ND])
-        flv = x[12]
-        intrp = x[13]
+        flv = spl[12]
+        intrp = spl[13]
         return t,mom,reim,flv,intrp
     with open(fname, "r") as fp:
         for line in fp.readlines():
