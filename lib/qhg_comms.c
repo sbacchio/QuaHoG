@@ -59,6 +59,9 @@ qhg_comms_init(int *proc_geom)
     for(int i=0; i<ND; i++)
       comms->proc_dims[i] = 0;
     MPI_Dims_create(comms->nprocs, ND, comms->proc_dims);
+    if(comms->proc_id == 0)
+      printf("Created the following cartesian process grid (t, x, y, z): %d %d %d %d\n",
+	     comms->proc_dims[0], comms->proc_dims[1], comms->proc_dims[2], comms->proc_dims[3]);
   } else {
     /* If proc_geom != NULL, expect an array of 4 ints, the
        process-grid dimensions */
@@ -102,7 +105,6 @@ qhg_comms_init(int *proc_geom)
     comms->neigh_proc[dir] = rp;
     comms->neigh_proc[dir+ND] = rm;
   }
-  comms->comm = MPI_COMM_WORLD;
   return comms;
 }
 
