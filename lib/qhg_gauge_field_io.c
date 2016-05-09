@@ -53,7 +53,7 @@ handle_ildg_binary_data(LimeReader *reader)
 {
   n_uint64_t bytes_in_record = limeReaderBytes(reader);
   n_uint64_t expected_bytes =
-    (conf_info.precision/8) *
+    (n_uint64_t)(conf_info.precision/8) *
     conf_info.dims[0] *
     conf_info.dims[1] *
     conf_info.dims[2] *
