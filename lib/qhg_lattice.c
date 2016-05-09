@@ -23,7 +23,10 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 
   if(err) {
     if(comms->proc_id == 0) {
-      fprintf(stderr, " Lattice dimensions not divisible by processe\n");
+      fprintf(stderr, " Lattice dimensions not divisible by processes\n");
+      fprintf(stderr, " (%d %d %d %d) / (%d %d %d %d)\n", 
+					   dims[0], dims[1], dims[2], dims[3],
+					   comms->proc_dims[0], comms->proc_dims[1], comms->proc_dims[2], comms->proc_dims[3]);
     }
     MPI_Abort(MPI_COMM_WORLD, 6);
   }
