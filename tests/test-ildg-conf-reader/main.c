@@ -1,4 +1,4 @@
-tests/test-ildg-conf-reader/invert.input#include <mpi.h>
+#include <mpi.h>
 #include <qhg.h>
 
 void
