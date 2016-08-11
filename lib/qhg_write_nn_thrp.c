@@ -15,7 +15,7 @@
 #include <qhg_nn_thrp_defs.h>
 
 void
-qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
+qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp, char group[])
 {
   qhg_lattice *lat = corr_thrp.corr.lat;
   int proc_id = lat->comms->proc_id;
@@ -34,7 +34,7 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
 
   /*
     We will only save the set of time-slices between [source, sink]
-   */
+  */
   {
     int t0 = corr_thrp.corr.origin[0];
     int dt = corr_thrp.dt;
@@ -92,79 +92,13 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
   hid_t file_id = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, fapl_id);
   H5Pclose(fapl_id);
 
-  /*
-    Attributes (metadata) are:
-    1) the origin (source position) [1-dimensional integer array of 4 elements]
-    2) the index order in the file [string]
-    3) source-sink separation [single integer]
-    4) flavor [string]
-    5) projector [string]
-   */
-
-  {
-    hsize_t n = 4;
-    hid_t attrdat_id = H5Screate_simple(1, &n, NULL);
-    hid_t attr_id = H5Acreate2(file_id, "Origin", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT, H5P_DEFAULT);
-    H5Awrite(attr_id, H5T_NATIVE_INT, corr_thrp.corr.origin);
-    H5Aclose(attr_id);
-    H5Sclose(attrdat_id);
-  }
-
-  {
-    char order[] = "C-order: [t,x,y,z,real/imag]\0";
-    hid_t attrdat_id = H5Screate(H5S_SCALAR);
-    hid_t type_id = H5Tcopy(H5T_C_S1);
-    H5Tset_size(type_id, strlen(order));
-    hid_t attr_id = H5Acreate1(file_id, "IndexOrder", type_id, attrdat_id, H5P_DEFAULT);
-    H5Awrite(attr_id, type_id, &order);
-    H5Aclose(attr_id);
-    H5Tclose(type_id);
-    H5Sclose(attrdat_id);
-  }
-
-  {
-    hid_t attrdat_id = H5Screate(H5S_SCALAR);
-    hid_t attr_id = H5Acreate1(file_id, "Sink-source separation", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT);
-    H5Awrite(attr_id, H5T_NATIVE_INT, &corr_thrp.dt);
-    H5Aclose(attr_id);
-    H5Sclose(attrdat_id);
-  }
-  
-  {
-    char *flav;
-    switch(corr_thrp.flav) {
-    case up:
-      flav = strdup("up");
-      break;
-    case dn:
-      flav = strdup("dn");
-      break;
-    }      
-    hid_t attrdat_id = H5Screate(H5S_SCALAR);
-    hid_t type_id = H5Tcopy(H5T_C_S1);
-    H5Tset_size(type_id, strlen(flav));
-    hid_t attr_id = H5Acreate1(file_id, "Flavor", type_id, attrdat_id, H5P_DEFAULT);
-    H5Awrite(attr_id, type_id, flav);
-    H5Aclose(attr_id);
-    H5Tclose(type_id);
-    H5Sclose(attrdat_id);
-  }
-  
-  {
-    char *proj = strdup(proj_to_str(corr_thrp.proj));
-    hid_t attrdat_id = H5Screate(H5S_SCALAR);
-    hid_t type_id = H5Tcopy(H5T_C_S1);
-    H5Tset_size(type_id, strlen(proj));
-    hid_t attr_id = H5Acreate1(file_id, "Projector", type_id, attrdat_id, H5P_DEFAULT);
-    H5Awrite(attr_id, type_id, proj);
-    H5Aclose(attr_id);
-    H5Tclose(type_id);
-    H5Sclose(attrdat_id);
-  }
-
   size_t lvol = 1;
   for(int i=0; i<ND; i++)
     lvol *= ldims[i];
+
+  hid_t lcpl_id = H5Pcreate(H5P_LINK_CREATE);
+  H5Pset_create_intermediate_group(lcpl_id, 1);  
+  hid_t top_id = H5Gcreate(file_id, group, lcpl_id, H5P_DEFAULT, H5P_DEFAULT);
   
   double *buf = qhg_alloc(sizeof(double)*lvol*2);
   _Complex double *c = corr_thrp.corr.C;
@@ -187,7 +121,79 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
 
     char *group_tag;
     asprintf(&group_tag, "%s", chan_tags[ichan]);
-    hid_t group_id = H5Gcreate(file_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);    
+    hid_t group_id = H5Gcreate(top_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    /*
+      Attributes (metadata) are:
+      1) the origin (source position) [1-dimensional integer array of 4 elements]
+      2) the index order in the file [string]
+      3) source-sink separation [single integer]
+      4) flavor [string]
+      5) projector [string]
+    */
+
+    {
+      hsize_t n = 4;
+      hid_t attrdat_id = H5Screate_simple(1, &n, NULL);
+      hid_t attr_id = H5Acreate2(group_id, "Origin", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(attr_id, H5T_NATIVE_INT, corr_thrp.corr.origin);
+      H5Aclose(attr_id);
+      H5Sclose(attrdat_id);
+    }
+
+    {
+      char order[] = "C-order: [t,x,y,z,real/imag]\0";
+      hid_t attrdat_id = H5Screate(H5S_SCALAR);
+      hid_t type_id = H5Tcopy(H5T_C_S1);
+      H5Tset_size(type_id, strlen(order));
+      hid_t attr_id = H5Acreate1(group_id, "IndexOrder", type_id, attrdat_id, H5P_DEFAULT);
+      H5Awrite(attr_id, type_id, &order);
+      H5Aclose(attr_id);
+      H5Tclose(type_id);
+      H5Sclose(attrdat_id);
+    }
+
+    {
+      hid_t attrdat_id = H5Screate(H5S_SCALAR);
+      hid_t attr_id = H5Acreate1(group_id, "Sink-source separation", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT);
+      H5Awrite(attr_id, H5T_NATIVE_INT, &corr_thrp.dt);
+      H5Aclose(attr_id);
+      H5Sclose(attrdat_id);
+    }
+  
+    {
+      char *flav;
+      switch(corr_thrp.flav) {
+      case up:
+	flav = strdup("up");
+	break;
+      case dn:
+	flav = strdup("dn");
+	break;
+      }      
+      hid_t attrdat_id = H5Screate(H5S_SCALAR);
+      hid_t type_id = H5Tcopy(H5T_C_S1);
+      H5Tset_size(type_id, strlen(flav));
+      hid_t attr_id = H5Acreate1(group_id, "Flavor", type_id, attrdat_id, H5P_DEFAULT);
+      H5Awrite(attr_id, type_id, flav);
+      H5Aclose(attr_id);
+      H5Tclose(type_id);
+      H5Sclose(attrdat_id);
+    }
+  
+    {
+      char *proj = strdup(proj_to_str(corr_thrp.proj));
+      hid_t attrdat_id = H5Screate(H5S_SCALAR);
+      hid_t type_id = H5Tcopy(H5T_C_S1);
+      H5Tset_size(type_id, strlen(proj));
+      hid_t attr_id = H5Acreate1(group_id, "Projector", type_id, attrdat_id, H5P_DEFAULT);
+      H5Awrite(attr_id, type_id, proj);
+      H5Aclose(attr_id);
+      H5Tclose(type_id);
+      H5Sclose(attrdat_id);
+    }
+    /* */
+  
     hid_t filespace = H5Screate_simple(ND+1, dims, NULL);
     hid_t dataset_id = H5Dcreate(group_id, "corr_x", H5T_NATIVE_DOUBLE, filespace,H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     filespace = H5Dget_space(dataset_id);
@@ -202,6 +208,8 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp)
     H5Pclose(plist_id);
     H5Gclose(group_id);
   }
+  H5Pclose(lcpl_id);
+  H5Gclose(top_id);
   H5Fclose(file_id);
   free(buf);
   return;

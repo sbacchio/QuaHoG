@@ -15,7 +15,7 @@
 #include <qhg_nucleon_defs.h>
 
 void
-qhg_write_nucleons(char fname[], qhg_correlator corr)
+qhg_write_nucleons(char fname[], qhg_correlator corr, char group[])
 {
   qhg_lattice *lat = corr.lat;
   int proc_id = lat->comms->proc_id;
@@ -37,27 +37,9 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
   hid_t file_id = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, fapl_id);
   H5Pclose(fapl_id);
 
-  /*
-    Attributes (metadata) are: 1) the origin (source position) and 2)
-    the index order in the file
-   */
-  hsize_t n = 4;
-  hid_t attrdat_id = H5Screate_simple(1, &n, NULL);
-  hid_t attr_id = H5Acreate2(file_id, "Origin", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT, H5P_DEFAULT);
-  H5Awrite(attr_id, H5T_NATIVE_INT, corr.origin);
-  H5Aclose(attr_id);
-  H5Sclose(attrdat_id);
-
-  char order[] = "C-order: [t,x,y,z,spin0,spin1,real/imag]\0";
-  attrdat_id = H5Screate(H5S_SCALAR);
-  hid_t type_id = H5Tcopy(H5T_C_S1);
-  H5Tset_size(type_id, strlen(order));
-  attr_id = H5Acreate1(file_id, "IndexOrder", type_id, attrdat_id, H5P_DEFAULT);
-  H5Awrite(attr_id, type_id, &order);
-
-  H5Aclose(attr_id);
-  H5Tclose(type_id);
-  H5Sclose(attrdat_id);
+  hid_t lcpl_id = H5Pcreate(H5P_LINK_CREATE);
+  H5Pset_create_intermediate_group(lcpl_id, 1);  
+  hid_t top_id = H5Gcreate(file_id, group, lcpl_id, H5P_DEFAULT, H5P_DEFAULT);
   
   double *buf = qhg_alloc(sizeof(double)*lvol*NS*NS*2);
   _Complex double *c = corr.C;
@@ -69,7 +51,7 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
   for(int iflav=0; iflav<NFLAV; iflav++) {
     char *group_tag;
     asprintf(&group_tag, "%s", flav_tags[iflav]);
-    hid_t group1_id = H5Gcreate(file_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    hid_t group1_id = H5Gcreate(top_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for(int ichan=0; ichan<NCHAN; ichan++) {
       for(int v=0; v<lvol; v++)
 	for(int s0=0; s0<NS; s0++)
@@ -80,6 +62,30 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
 	  
       asprintf(&group_tag, "%s", chan_tags[ichan]);
       hid_t group2_id = H5Gcreate(group1_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);      
+
+      /*
+	Attributes (metadata) are: 1) the origin (source position) and 2)
+	the index order in the file
+      */
+      hsize_t n = 4;
+      hid_t attrdat_id = H5Screate_simple(1, &n, NULL);
+      hid_t attr_id = H5Acreate2(group2_id, "Origin", H5T_NATIVE_INT, attrdat_id, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(attr_id, H5T_NATIVE_INT, corr.origin);
+      H5Aclose(attr_id);
+      H5Sclose(attrdat_id);
+
+      char order[] = "C-order: [t,x,y,z,spin0,spin1,real/imag]\0";
+      attrdat_id = H5Screate(H5S_SCALAR);
+      hid_t type_id = H5Tcopy(H5T_C_S1);
+      H5Tset_size(type_id, strlen(order));
+      attr_id = H5Acreate1(group2_id, "IndexOrder", type_id, attrdat_id, H5P_DEFAULT);
+      H5Awrite(attr_id, type_id, &order);
+
+      H5Aclose(attr_id);
+      H5Tclose(type_id);
+      H5Sclose(attrdat_id);
+      /* */
+
       hid_t filespace = H5Screate_simple(ND+3, dims, NULL); 
       hid_t dataset_id = H5Dcreate(group2_id, "corr_x", H5T_NATIVE_DOUBLE, filespace,H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       hid_t subspace = H5Screate_simple(ND+3, ldims, NULL);
@@ -96,6 +102,8 @@ qhg_write_nucleons(char fname[], qhg_correlator corr)
     }
     H5Gclose(group1_id);
   }
+  H5Pclose(lcpl_id);
+  H5Gclose(top_id);
   H5Fclose(file_id);
   free(buf);
   return;
