@@ -13,7 +13,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = mainprogs lib
+DIRS = tests lib
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done

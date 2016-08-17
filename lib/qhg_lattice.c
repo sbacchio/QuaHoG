@@ -6,13 +6,31 @@
 #include <qhg_types.h>
 #include <qhg_comms.h>
 
+#ifdef TMLQCD
+#include <tmLQCD.h>
+#endif 
+
 #define D(sign, dir) ((sign)*ND + (dir))
 
 qhg_lattice *
-qhg_lattice_init(int dims[ND])
+qhg_lattice_init(int dims[ND], qhg_comms *comms)
 {
   qhg_lattice *lat = qhg_alloc(sizeof(qhg_lattice));
 
+  int err = 0;
+  for(int d=0; d<ND; d++)
+    err += dims[d] % comms->proc_dims[d];
+
+  if(err) {
+    if(comms->proc_id == 0) {
+     fprintf(stderr, " Lattice dimensions not divisible by processes\n");
+      fprintf(stderr, " (%d %d %d %d) / (%d %d %d %d)\n", 
+					   dims[0], dims[1], dims[2], dims[3],
+					   comms->proc_dims[0], comms->proc_dims[1], comms->proc_dims[2], comms->proc_dims[3]);
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Abort(MPI_COMM_WORLD, 6);
+  }
   /* Global dimensions */
   for(int d=0; d<ND; d++)
     lat->dims[d] = dims[d];
@@ -21,22 +39,48 @@ qhg_lattice_init(int dims[ND])
     lat->vol *= dims[d];
   lat->v3 = lat->vol / dims[0];
 
-  /* Initialize comms structure */
-  lat->comms = qhg_comms_init(lat);
-
   /* Local dimensions */
   int ldims[ND];
   for(int dir=0; dir<ND; dir++)
-    ldims[dir] = lat->dims[dir]/lat->comms->proc_dims[dir];
-  int lvol = lat->vol/lat->comms->nprocs;
+    ldims[dir] = lat->dims[dir]/comms->proc_dims[dir];
+  int lvol = lat->vol/comms->nprocs;
   int lv3 = lvol/ldims[0];
 
-  int *procs = lat->comms->proc_dims;  
+  int *procs = comms->proc_dims;  
   int par_dir[ND];
   /* par_dir[d] == 1 if direction d is parallelised, else 0 */
   for(int d=0; d<ND; d++)
     par_dir[d] = procs[d] == 1 ? 0 : 1;
 
+#ifdef TMLQCD
+  tmLQCD_lat_params *lp = qhg_alloc(sizeof(tmLQCD_lat_params));
+  int ret = tmLQCD_get_lat_params(lp);
+  int gdims[ND];
+  int lp_ldims[] = {
+    lp->T, lp->LX, lp->LY, lp->LZ
+  };
+  for(int i=0; i<ND; i++) {
+    gdims[i] = lp_ldims[i]*procs[i];
+  }
+
+  for(int dir=0; dir<ND; dir++)
+    if(gdims[dir] != lat->dims[dir]) {
+      fprintf(stderr, " Dimension missmatch with tmLQCD\n");
+      fprintf(stderr, " tmLQCD	: %d*%d %d*%d %d*%d %d*%d\n",
+	      lp->T,procs[0],
+	      lp->LX,procs[1],
+	      lp->LY,procs[2],
+	      lp->LZ,procs[3]);
+      fprintf(stderr, " QHG	: %d %d %d %d\n",
+	      lat->dims[0],
+	      lat->dims[1],
+	      lat->dims[2],
+	      lat->dims[3]);
+      exit(1);
+    }
+  free(lp);
+#endif
+  
   int bvol[ND];  
   /* 
      The number of sites of the boundary in each direction. For
@@ -199,14 +243,13 @@ qhg_lattice_init(int dims[ND])
   
   lat->lvol = lvol;
   lat->lv3 = lv3;  
-  
+  lat->comms = comms;
   return lat;
 }
 
 void
 qhg_lattice_finalize(qhg_lattice *lat)
 {
-  qhg_comms_finalize(lat->comms);
   free(lat);
   return;
 }

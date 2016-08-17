@@ -3,7 +3,7 @@
 
 #include <qhg_types.h>
 
-qhg_comms *qhg_comms_init(qhg_lattice *);
+qhg_comms *qhg_comms_init(int *);
 void qhg_comms_finalize(qhg_comms *);
 
 #endif /* _QHG_COMMS_H */

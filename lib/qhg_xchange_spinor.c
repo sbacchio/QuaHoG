@@ -3,7 +3,6 @@
 
 #include <mpi.h>
 #include <complex.h>
-#include <tmLQCD.h>
 #include <qhg_defs.h>
 #include <qhg_idx.h>
 #include <qhg_types.h>

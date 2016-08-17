@@ -21,7 +21,7 @@ LIBDIR = ../../lib
 
 CFLAGS += -I$(LIBDIR)
 LDFLAGS += -L$(LIBDIR)
-LIBS := -lqhg $(LIBS)
+LIBS := -llime -lmxml -lqhg $(LIBS) $(TMLQCD_LIBS) $(ARPACK_LIBS)
 
 SOURCES = main
 

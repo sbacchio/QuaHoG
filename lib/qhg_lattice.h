@@ -3,7 +3,7 @@
 
 #include <qhg_types.h>
 
-qhg_lattice *qhg_lattice_init(int *);
+qhg_lattice *qhg_lattice_init(int *, qhg_comms *);
 void qhg_lattice_finalize(qhg_lattice *);
 
 #endif /* _QHG_LATTICE_H */

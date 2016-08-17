@@ -3,6 +3,6 @@
 
 #include <qhg_types.h>
 
-void qhg_write_mesons(char [], qhg_correlator);
+void qhg_write_mesons(char [], qhg_correlator , char []);
   
 #endif /* _QHG_WRITE_MESONS_H */
