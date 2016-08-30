@@ -1,6 +1,10 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O3 -axAVX -D_GNU_SOURCE -std=gnu99 -I$(HOME)/tmLQCD/include -I$(HDF5_BASE)/include/
-LDFLAGS=-L$(HOME)/tmLQCD/lib -L$(HOME)/loc-install/lib -L$(HOME)/loc-install/ARPACK/lib -L$(HDF5_BASE)/lib
-LIBS=-lwrapper -lhmc -lmeas -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -mkl -lm -llemon -llime -lifcore -limf -lhdf5 
+### CFLAGS=-D_GNU_SOURCE -DTMLQCD -I$(HOME)/tmLQCD/include -I$(HOME)/loc-install/include
+### LDFLAGS=-L$(HOME)/tmLQCD/lib -L$(HOME)/loc-install/lib -L$(HOME)/loc-install/lib
+### LIBS=-lwrapper -lhmc -lmonomial -loperator -lsolver -linit -llinalg -lhmc -lxchange -lrational -lio -lparpack -larpack -lm -llemon -llime -lhdf5 -lmxml
+
+CFLAGS=-std=c99 -I$(HDF5_BASE)/include -D_GNU_SOURCE -I$(HOME)/loc-install/include
+LDFLAGS=-L$(HOME)/loc-install/lib -L$(HDF5_BASE)/lib -L$(HOME)/loc-install/lib
+LIBS=-lm -llime -lhdf5 -lmxml
