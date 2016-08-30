@@ -20,9 +20,9 @@ def get_moms(cut, dims):
     mv = np.array(sorted(mv.T, key=lambda x: tuple(x)), int)
     return mv
 
-def get_origin(fname):
+def get_origin(fname, grp):
     with h5py.File(fname, "r") as fp:
-        origin = fp.attrs['Origin']
+        origin = fp[grp].attrs['Origin']
         # infer whether this file is a three-point function file by
         # inspecting whether it has an attribute "Sink-source
         # separation". If so, set the time-component of origin to
@@ -44,15 +44,15 @@ def get_dset(fname, name):
         dset = np.array(fp[name])
     return dset
 
-def get_attrs(fname):
+def get_attrs(fname, grp):
     # Returns HDF5 file attributes
     with h5py.File(fname, "r") as fp:
-        d = dict(fp.attrs)
+        d = dict(fp[grp].attrs)
     return d
 
 def init_h5file(fname, root):
     with h5py.File(fname, "w") as fp:
-        fp.create_group(root)
+        fp.require_group(root)
     return        
 
 def write_dset(fname, grp_name, arr):
@@ -84,10 +84,10 @@ def main():
     if output is None:
         output = fname + ".mom"
         
-    origin = get_origin(fname)
     datasets = get_dset_names(fname)
     mom_corr = {d: {} for d in datasets}
     for d in datasets:
+        origin = get_origin(fname, "/".join(d.split("/")[:-1]))
         corr = get_dset(fname, d)
         dims = np.array(corr.shape[:-1])
         corr = corr.reshape([np.prod(dims),2])
@@ -122,29 +122,24 @@ def main():
                 shape = mom_corr[d][msq]['arr'].shape
                 mom_corr[d][msq]['arr'] = mom_corr[d][msq]['arr'].reshape(shape[:2])
 
-    a = get_attrs(fname)
-    # Origin will be used as the group under root
-    pos = a.pop("Origin")
-    pos = "sx%02dsy%02dsz%02dst%02d" % (pos[1], pos[2], pos[3], pos[0])
-    top = root + "/" + pos
-    # Pop the index order, it is irrelevant
-    a.pop("IndexOrder")
-    # If there is a "Sink-source separation" attrib. put as next level group
-    if "Sink-source separation" in a.keys():
-        val = a["Sink-source separation"]
-        top = top + "/dt%02d" % val
-    # If there is a "projector" attrib. put as next level group
-    if "Projector" in a.keys():
-        val = a["Projector"].decode()
-        top = top + "/" + val
-    # If there is a "flavor" attrib. put as next level group
-    if "Flavor" in a.keys():
-        val = a["Flavor"].decode()
-        top = top + "/" + val
     # Initialize the file, writing the top-level group
+    top = root
     init_h5file(output, top)
-    # Loop over dataset names writing the FTed arrays
     for d in datasets:
+        a = get_attrs(fname, "/".join(d.split("/")[:-1]))
+        # If there is a "Sink-source separation" attrib. put as next level group
+        if "Sink-source separation" in a.keys():
+            val = a["Sink-source separation"]
+            top = top + "/dt%02d" % val
+        # If there is a "projector" attrib. put as next level group
+        if "Projector" in a.keys():
+            val = a["Projector"].decode()
+            top = top + "/" + val
+        # If there is a "flavor" attrib. put as next level group
+        if "Flavor" in a.keys():
+            val = a["Flavor"].decode()
+            top = top + "/" + val
+        # Write the datasets
         grp = top + "/" + "/".join(d.split("/")[:-1])
         for msq in mom_corr[d]:
             subgrp = grp + "/msq%04d" % msq
