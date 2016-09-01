@@ -22,13 +22,10 @@
 #include <qhg_mom_list.h>
 #include <qhg_mesons.h>
 #include <qhg_write_mesons.h>
-#include <qhg_write_mom_mesons.h>
 #include <qhg_mesons_udsc.h>
 #include <qhg_write_mesons_udsc.h>
-#include <qhg_write_mom_mesons_udsc.h>
 #include <qhg_nucleons.h>
 #include <qhg_write_nucleons.h>
-#include <qhg_write_mom_nucleons.h>
 #include <qhg_spinor_field_io.h>
 #include <qhg_spinor_field_bc.h>
 #include <qhg_spinor_field_linalg.h>
@@ -37,7 +34,6 @@
 #include <qhg_nn_thrp.h>
 #include <qhg_nn_thrp_defs.h>
 #include <qhg_write_nn_thrp.h>
-#include <qhg_write_mom_nn_thrp.h>
 #include <qhg_prop_field_linalg.h>
 #include <qhg_io_utils.h>
 #include <qhg_correlator_shift.h>

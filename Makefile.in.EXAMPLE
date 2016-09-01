@@ -1,0 +1,36 @@
+AR=ar
+RANLIB=ranlib
+CC=mpicc
+
+#... Adjust according to compiler
+CFLAGS=-O2 -I./ -std=gnu99 -fopenmp
+
+#... Path to lime.h
+LIME_INC=-I$(HOME)/loc-install/include
+CFLAGS+=$(LIME_INC)
+
+#... Path to mxml.h
+MXML_INC=-I$(HOME)/loc-install/include
+CFLAGS+=$(MXML_INC)
+
+#... Path to hdf5.h
+HDF5_INC=
+CFLAGS+=$(HDF5_INC)
+
+#... Paths to libraries
+LDFLAGS=
+
+#... Path to liblime.a
+LIME_LIB=-L$(HOME)/loc-install/lib
+LDFLAGS+=$(LIME_LIB)
+
+#... Path to libmxml.a
+MXML_LIB=-L$(HOME)/loc-install/lib
+LDFLAGS+=$(MXML_LIB)
+
+#... Path to libhdf5.a
+HDF5_LIB=
+LDFLAGS+=$(HDF5_LIB)
+
+#... Order may matter depending on compiler
+LIBS=-fopenmp -lqhg -llime -lmxml -lhdf5
