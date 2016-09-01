@@ -50,6 +50,13 @@ def get_attrs(fname, grp):
         d = dict(fp[grp].attrs)
     return d
 
+def write_attrs(fname, grp_name, attrs):
+    with h5py.File(fname, "a") as fp:
+        grp = fp.require_group(grp_name)
+        for a in attrs:
+            grp.attrs[a] = attrs[a]
+    return
+
 def init_h5file(fname, root):
     with h5py.File(fname, "w") as fp:
         fp.require_group(root)
@@ -57,7 +64,7 @@ def init_h5file(fname, root):
 
 def write_dset(fname, grp_name, arr):
     with h5py.File(fname, "a") as fp:
-        grp = fp.create_group(grp_name)
+        grp = fp.require_group(grp_name)
         grp.create_dataset('arr', arr['arr'].shape, dtype=arr['arr'].dtype, data=arr['arr'])
         grp.create_dataset('mvec', arr['mom'].shape, dtype=arr['mom'].dtype, data=arr['mom'])
     return        
@@ -127,20 +134,9 @@ def main():
     init_h5file(output, top)
     for d in datasets:
         a = get_attrs(fname, "/".join(d.split("/")[:-1]))
-        # If there is a "Sink-source separation" attrib. put as next level group
-        if "Sink-source separation" in a.keys():
-            val = a["Sink-source separation"]
-            top = top + "/dt%02d" % val
-        # If there is a "projector" attrib. put as next level group
-        if "Projector" in a.keys():
-            val = a["Projector"].decode()
-            top = top + "/" + val
-        # If there is a "flavor" attrib. put as next level group
-        if "Flavor" in a.keys():
-            val = a["Flavor"].decode()
-            top = top + "/" + val
         # Write the datasets
         grp = top + "/" + "/".join(d.split("/")[:-1])
+        write_attrs(output, grp, a)
         for msq in mom_corr[d]:
             subgrp = grp + "/msq%04d" % msq
             write_dset(output, subgrp, mom_corr[d][msq])
