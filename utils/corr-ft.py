@@ -81,20 +81,31 @@ def main():
     parser.add_argument("-m", "--max-msq", metavar="Q", type=int, default=max_msq,
                         help="Write out up to max momentum squared Q (default: %d)" % max_msq)
     parser.add_argument("-i", "--inverse-ft", action='store_true', default=False,
-                        help="Perform inverse fourier transform")    
+                        help="Perform inverse fourier transform")  
+    parser.add_argument("-p", "--source-position", metavar="T,X,Y,Z",
+                        type=str, default=None,
+                        help="Ignore any attribute meta data for source-position and use T,X,Y,Z")    
     args = parser.parse_args()
     fname = args.FNAME
     output = args.output
     root = args.root
     inverse_ft = args.inverse_ft
     max_msq = args.max_msq
+    source_position = args.source_position
     if output is None:
         output = fname + ".mom"
+
+    if source_position is not None:
+        source_position = list(map(int, source_position.split(",")))
         
     datasets = get_dset_names(fname)
     mom_corr = {d: {} for d in datasets}
     for d in datasets:
-        origin = get_origin(fname, "/".join(d.split("/")[:-1]))
+        if source_position is None:
+            origin = get_origin(fname, "/".join(d.split("/")[:-1]))
+        else:
+            origin = source_position
+        print(origin)
         corr = get_dset(fname, d)
         dims = np.array(corr.shape[:-1])
         corr = corr.reshape([np.prod(dims),2])
