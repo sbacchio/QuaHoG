@@ -20,8 +20,8 @@ qhg_write_nucleons(char fname[], qhg_correlator corr, char group[])
   qhg_lattice *lat = corr.lat;
   int proc_id = lat->comms->proc_id;
   int am_io_proc = proc_id == 0 ? 1 : 0;
-  int site_size = corr.site_size;
-  int lvol = lat->lvol;
+  size_t site_size = corr.site_size;
+  unsigned long int lvol = lat->lvol;
   int *pd = lat->comms->proc_dims;
   int *pc = lat->comms->proc_coords;
   int np = lat->comms->nprocs;
@@ -53,7 +53,7 @@ qhg_write_nucleons(char fname[], qhg_correlator corr, char group[])
     asprintf(&group_tag, "%s", flav_tags[iflav]);
     hid_t group1_id = H5Gcreate(top_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for(int ichan=0; ichan<NCHAN; ichan++) {
-      for(int v=0; v<lvol; v++)
+      for(unsigned long int v=0; v<lvol; v++)
 	for(int s0=0; s0<NS; s0++)
 	  for(int s1=0; s1<NS; s1++) {
 	    buf[0 + 2*(s1 + NS*(s0 + NS*v))] = creal(corr.C[NIDX(v, iflav, ichan, s0, s1)]);

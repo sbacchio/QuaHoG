@@ -12,9 +12,9 @@
 double *
 qhg_spinor_field_rms(qhg_spinor_field in, int origin[ND])
 {
-  int vol = in.lat->vol;
-  int lvol = in.lat->lvol;
-  int **nn = in.lat->nn;
+  unsigned long int vol = in.lat->vol;
+  unsigned long int lvol = in.lat->lvol;
+  unsigned long int **nn = in.lat->nn;
   int *dims = in.lat->dims;
   int *ldims = in.lat->ldims;
   int *pc = in.lat->comms->proc_coords;
@@ -46,7 +46,7 @@ qhg_spinor_field_rms(qhg_spinor_field in, int origin[ND])
 #ifdef QHG_OMP
 #pragma omp for 
 #endif
-    for(int v=0; v<lvol; v++) {
+    for(unsigned long int v=0; v<lvol; v++) {
       _Complex double *s = &phi[S(v)];
       int lx[ND] = CO(v, ldims);
       int x[ND];

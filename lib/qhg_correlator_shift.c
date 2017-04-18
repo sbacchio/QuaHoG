@@ -20,7 +20,7 @@
   and move backwards in dir. In the end the last slice will be the first.  
  */
 static void
-shift_locally(_Complex double *c, int site_size, int dims[ND], int dir, int sign)
+shift_locally(_Complex double *c, size_t site_size, int dims[ND], int dir, int sign)
 {
   _Complex double swap[site_size];  
   int d[] = {dims[0],dims[1],dims[2],dims[3]};
@@ -30,15 +30,15 @@ shift_locally(_Complex double *c, int site_size, int dims[ND], int dir, int sign
     for(int x=0; x<d[1]; x++)
       for(int y=0; y<d[2]; y++)
 	for(int z=0; z<d[3]; z++) {
-	  int x0[] = {t,x,y,z};
-	  int x1[] = {t,x,y,z};	    
+	  long long int x0[] = {t,x,y,z};
+	  long long int x1[] = {t,x,y,z};	    
 	  if(sign == -1) {
 	    x0[dir] = d[dir] - x0[dir] - 1;	    
 	    x1[dir] = d[dir] - x1[dir] - 1;
 	  }
 	  x1[dir] += 1;
-	  int v1 = IDX(x1, dims);
-	  int v0 = IDX(x0, dims);
+	  unsigned long int v1 = IDX(x1, dims);
+	  unsigned long int v0 = IDX(x0, dims);
 	  memcpy(swap, &c[v0*site_size], sizeof(_Complex double)*site_size);
 	  memcpy(&c[v0*site_size], &c[v1*site_size], sizeof(_Complex double)*site_size);
 	  memcpy(&c[v1*site_size], swap, sizeof(_Complex double)*site_size);	    
@@ -60,7 +60,7 @@ qhg_correlator_shift(qhg_correlator corr, int shifts_in[ND])
   for(int dir=0; dir<ND; dir++)
     shifts[dir] = shifts[dir] <= dims[dir]/2 ? shifts[dir] : (shifts[dir] - dims[dir]);
   
-  int site_size = corr.site_size;
+  size_t site_size = corr.site_size;
   int *ldims = lat->ldims;
   int *procs = lat->comms->proc_dims;
   MPI_Comm comm = lat->comms->comm;

@@ -14,7 +14,7 @@ get_boundary(_Complex double *bnd, int dir, _Complex double *field, qhg_lattice 
 {
   int sign = dir / ND == 0 ? +1 : -1;
   dir = dir % ND;
-  int bvol = lat->bvol[dir];
+  unsigned long int bvol = lat->bvol[dir];
   int *ldims = lat->ldims;
   int *procs = lat->comms->proc_dims;
   if(procs[dir] > 1) {
@@ -43,10 +43,10 @@ get_boundary_edge(qhg_gauge_field gf, int dir)
 {
   qhg_lattice *lat = gf.lat;
   int d0 = dir % ND;
-  int bvol = lat->bvol[d0];
+  unsigned long int bvol = lat->bvol[d0];
   int *ldims = lat->ldims;
   int *procs = lat->comms->proc_dims;
-  int *evol = lat->evol[d0];
+  unsigned long int *evol = lat->evol[d0];
   if(procs[d0] > 1) {
     size_t site_size = NC*NC*ND*sizeof(_Complex double);
     int n_edge = 0;

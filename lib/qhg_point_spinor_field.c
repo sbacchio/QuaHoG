@@ -12,7 +12,7 @@ qhg_point_spinor_field(qhg_spinor_field sp, int coords[ND], int spin, int color)
 {
   int *ldims = sp.lat->ldims;
   int *procs = sp.lat->comms->proc_dims;
-  int lvol = sp.lat->lvol;
+  unsigned long int lvol = sp.lat->lvol;
   int proc_id = sp.lat->comms->proc_id;
   
   /* Coordinates of proc which holds coords[], in t,x,y,z */
@@ -28,7 +28,7 @@ qhg_point_spinor_field(qhg_spinor_field sp, int coords[ND], int spin, int color)
   for(int i=0; i<ND; i++)
     lc[i] = coords[i] % ldims[i];
 
-  int lidx = IDX(lc, ldims);
+  unsigned long int lidx = IDX(lc, ldims);
 
   /* Set source to zero on all procs */
   memset(sp.field, '\0', lvol*NC*NS*sizeof(_Complex double));

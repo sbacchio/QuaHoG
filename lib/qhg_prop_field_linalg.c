@@ -14,8 +14,8 @@ void
 qhg_prop_field_Gdag(qhg_spinor_field psi[NC*NS])
 {
   qhg_lattice *lat = psi[0].lat;
-  int lvol = lat->lvol;
-  for(int v=0; v<lvol; v++) {
+  unsigned long int lvol = lat->lvol;
+  for(unsigned long int v=0; v<lvol; v++) {
     _Complex double G[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];
     for(int cs0=0; cs0<NS*NC; cs0++)
@@ -40,8 +40,8 @@ void
 qhg_prop_field_g5_G(qhg_spinor_field psi[NC*NS])
 {
   qhg_lattice *lat = psi[0].lat;
-  int lvol = lat->lvol;
-  for(int v=0; v<lvol; v++) {
+  unsigned long int lvol = lat->lvol;
+  for(unsigned long int v=0; v<lvol; v++) {
     _Complex double G[NS*NC][NS*NC];
     _Complex double g5G[NS*NC][NS*NC];
     for(int cs0=0; cs0<NS*NC; cs0++)

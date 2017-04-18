@@ -21,12 +21,12 @@ qhg_spinor_twist_t_bc(qhg_spinor_field out, qhg_spinor_field in, double angle)
   int Lt = lat->dims[0];
   int lt = lat->ldims[0];
   int t0 = lat->comms->proc_coords[0]*lt;  
-  int lv3 = lat->lv3;
+  unsigned long int lv3 = lat->lv3;
   for(int t=0; t<lt; t++) {
     int gt = t0+t;
     double phi = (M_PI*angle*gt)/(double)Lt;
     _Complex double phase = cos(phi) + _Complex_I*sin(phi);
-    for(int v=lv3*t; v<lv3*(t+1); v++) {
+    for(unsigned long int v=lv3*t; v<lv3*(t+1); v++) {
       _Complex double *p = &(out.field[v*NC*NS]);
       _Complex double *q = &(in.field[v*NC*NS]);
       memcpy(p, q, NC*NS*sizeof(_Complex double));

@@ -20,14 +20,14 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp, char group[])
   qhg_lattice *lat = corr_thrp.corr.lat;
   int proc_id = lat->comms->proc_id;
   int am_io_proc = proc_id == 0 ? 1 : 0;
-  int site_size = corr_thrp.corr.site_size;
+  size_t site_size = corr_thrp.corr.site_size;
   int *pd = lat->comms->proc_dims;
   int *pc = lat->comms->proc_coords;
   int np = lat->comms->nprocs;
   int *ld = lat->ldims;
   int *d = lat->dims;
 
-  int offset = 0;
+  unsigned long int offset = 0;
   hsize_t starts[ND+1] = {pc[0]*ld[0], pc[1]*ld[1], pc[2]*ld[2], pc[3]*ld[3], 0};
   hsize_t dims[ND+1] = {d[0], d[1], d[2], d[3], 2};
   hsize_t ldims[ND+1] = {ld[0], ld[1], ld[2], ld[3], 2};
@@ -109,11 +109,11 @@ qhg_write_nn_thrp(char fname[], qhg_thrp_correlator corr_thrp, char group[])
   for(int ichan=0; ichan<NCHAN; ichan++) {
     for(int t0=0; t0<ldims[0]; t0++) {
       int lt = lat->ldims[0];
-      int lv3 = lat->lvol/lt;
+      unsigned long int lv3 = lat->lvol/(unsigned long int)lt;
       int t = (t0+offset)%lt;
-      for(int v3=0; v3<lv3; v3++) {
-	int v0 = t0*lv3 + v3;
-	int v = t*lv3 + v3;
+      for(unsigned long int v3=0; v3<lv3; v3++) {
+	unsigned long int v0 = (unsigned long int)t0*lv3 + v3;
+	unsigned long int v = (unsigned long int)t*lv3 + v3;
 	buf[0 + 2*v0] = creal(c[TIDX(v, ichan)]);
 	buf[1 + 2*v0] = cimag(c[TIDX(v, ichan)]);
       }

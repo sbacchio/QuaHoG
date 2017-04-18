@@ -36,15 +36,15 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
     lat->dims[d] = dims[d];
   lat->vol = 1;
   for(int d=0; d<ND; d++)
-    lat->vol *= dims[d];
+    lat->vol *= (unsigned long int)dims[d];
   lat->v3 = lat->vol / dims[0];
 
   /* Local dimensions */
   int ldims[ND];
   for(int dir=0; dir<ND; dir++)
     ldims[dir] = lat->dims[dir]/comms->proc_dims[dir];
-  int lvol = lat->vol/comms->nprocs;
-  int lv3 = lvol/ldims[0];
+  unsigned long int lvol = lat->vol/comms->nprocs;
+  unsigned long int lv3 = lvol/ldims[0];
 
   int *procs = comms->proc_dims;  
   int par_dir[ND];
@@ -81,7 +81,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
   free(lp);
 #endif
   
-  int bvol[ND];  
+  unsigned long int bvol[ND];  
   /* 
      The number of sites of the boundary in each direction. For
      directions which are not parallelised bvol[dir] == 0;
@@ -93,13 +93,13 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
      Maps sites to their nearest neighbor. Maps sites in the bulk to
      the boundaries and in the boundaries to the edges.
   */
-  int nnv = lvol;
+  unsigned long int nnv = lvol;
   for(int i=0; i<ND; i++)
     nnv += 2*bvol[i];
 
-  int *nn[2*ND];
+  unsigned long int *nn[2*ND];
   for(int d=0; d<2*ND; d++)
-    nn[d] = qhg_alloc(sizeof(int)*nnv);
+    nn[d] = qhg_alloc(sizeof(unsigned long int)*nnv);
 
   /* 
      First initialize assuming periodic boundaries within local
@@ -109,7 +109,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
     /* 
        Neighbors in +dir 
     */
-    for(int v=0; v<lvol; v++) {
+    for(unsigned long int v=0; v<lvol; v++) {
       int x[ND] = CO(v, ldims);
       x[dir] = (x[dir] + 1) % ldims[dir];
       nn[dir][v] = IDX(x, ldims);
@@ -117,7 +117,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
     /* 
        Neighbors in -dir 
     */
-    for(int v=0; v<lvol; v++) {
+    for(unsigned long int v=0; v<lvol; v++) {
       int x[ND] = CO(v, ldims);
       x[dir] = (ldims[dir] + x[dir] - 1) % ldims[dir];
       nn[dir+ND][v] = IDX(x, ldims);
@@ -129,7 +129,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
      (d0,d1). For a pair of directions to have edges, both should be
      parallelised, otherwise evol[d0][d1] = evol[d1][d0] == 0;
   */
-  int evol[ND][ND];  
+  unsigned long int evol[ND][ND];  
   for(int d0=0; d0<ND; d0++) {
     for(int d1=0; d1<ND; d1++)
       evol[d0][d1] = (par_dir[d0]*par_dir[d1]) ? lvol/ldims[d0]/ldims[d1] : 0;
@@ -137,7 +137,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
     evol[d0][d0] = 0;
   }
   
-  int v_offset = lvol;
+  unsigned long int v_offset = lvol;
   for(int d0=0; d0<ND; d0++)
     for(int s0=0; s0<2; s0++)    
       if(par_dir[d0]) {
@@ -157,7 +157,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 	   lvol. First come the forward boundaries for all directions, then
 	   the backwards.
 	*/ 
-	for(int v=0; v<bvol[d0]; v++) {
+	for(unsigned long int v=0; v<bvol[d0]; v++) {
 	  int xb[ND] = CO(v, bdims);
 	  int x[ND];
 	  for(int i=0; i<ND; i++)
@@ -170,7 +170,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 	     coordinate 0.
 	  */
 	  x[d0] = s0 == 0 ? ldims[d0]-1 : 0;
-	  int vv = IDX(x, ldims);
+	  unsigned long int vv = IDX(x, ldims);
 	  nn[D(s0, d0)][vv] = v + v_offset;
 	}	
 
@@ -179,7 +179,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 	   of sites on the boundaries, for the perpendicular
 	   directions to d0.
 	*/ 
-	for(int v=0; v<bvol[d0]; v++) {
+	for(unsigned long int v=0; v<bvol[d0]; v++) {
 	  int xb[ND] = CO(v, bdims);
 	  int x[ND];
 	  for(int d1=0; d1<ND; d1++)
@@ -190,7 +190,7 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 		x[i] = xb[i];
 
 	      x[d1] = (bdims[d1] + x[d1] + 1 - 2*s1) % bdims[d1];
-	      int vv = IDX(x, bdims);
+	      unsigned long int vv = IDX(x, bdims);
 	      nn[D(s1, d1)][v + v_offset] = vv + v_offset;
 	    }
 	}
@@ -216,14 +216,14 @@ qhg_lattice_init(int dims[ND], qhg_comms *comms)
 	    edims[d0] = 1;
 	    edims[d1] = 1;  	
       
-	    for(int v=0; v<evol[d0][d1]; v++) {
+	    for(unsigned long int v=0; v<evol[d0][d1]; v++) {
 	      int xb[ND] = CO(v, edims);
 	      int x[ND];
 	      for(int i=0; i<ND; i++)
 		x[i] = xb[i];
 	      x[d0] = s0 == 0 ? ldims[d0] - 1 : 0;
 	      x[d1] = s1 == 0 ? ldims[d1] - 1 : 0;
-	      int vv = IDX(x, ldims);
+	      unsigned long int vv = IDX(x, ldims);
 	      nn[D(s1, d1)][nn[D(s0, d0)][vv]] = v+v_offset;
 	      /* The hop-order commutes */
 	      nn[D(s0, d0)][nn[D(s1, d1)][vv]] = v+v_offset;

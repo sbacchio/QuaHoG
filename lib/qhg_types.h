@@ -22,18 +22,18 @@ typedef struct {
 typedef struct {
   /* Global dimensions */
   int dims[ND];
-  int vol;
-  int v3;
+  unsigned long int vol;
+  unsigned long int v3;
   /* Local dimensions */
   int ldims[ND];
-  int lvol;
-  int lv3;
+  unsigned long int lvol;
+  unsigned long int lv3;
   /* Volume of boundaries */
-  int bvol[ND];
+  unsigned long int bvol[ND];
   /* Volume of edges */
-  int evol[ND][ND];
+  unsigned long int evol[ND][ND];
   /* Nearest neighbor indexing */
-  int *nn[2*ND];
+  unsigned long int *nn[2*ND];
   /* Pointer to comms struct */
   qhg_comms *comms;
 } qhg_lattice;
@@ -61,7 +61,7 @@ typedef struct {
   
 typedef struct {
   _Complex double *C;
-  int site_size;
+  size_t site_size;
   int *origin;
   /* So far cutoff is not used */
   int cutoff[ND];

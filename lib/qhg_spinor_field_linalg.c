@@ -16,9 +16,9 @@ void
 qhg_spinors_ax(_Complex double a, qhg_spinor_field psi[], int n_spinors)
 {
   qhg_lattice *lat = psi[0].lat;
-  int lvol = lat->lvol;
+  unsigned long int lvol = lat->lvol;
   for(int isp=0; isp<n_spinors; isp++) 
-    for(int v=0; v<lvol; v++) {
+    for(unsigned long int v=0; v<lvol; v++) {
       _Complex double *q = &(psi[isp].field[v*NC*NS]);
       spinor_linalg_ax(a, q);
     }
