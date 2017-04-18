@@ -3,7 +3,7 @@ RANLIB=ranlib
 CC=mpicc
 
 #... Adjust according to compiler
-CFLAGS=-O2 -I./ -std=gnu99 -fopenmp
+CFLAGS=-O2 -I./ -std=gnu99 -fopenmp -DQHG_OMP
 
 #... Path to lime.h
 LIME_INC=-I$(HOME)/loc-install/include
