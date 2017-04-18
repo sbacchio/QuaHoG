@@ -33,15 +33,15 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
   for(int i=0; i<ND; i++)
     corr.origin[i] = source_coords[i];
   int tsrc = corr.origin[0];  
-  int lvol = lat->lvol;
-  int lv3 = lat->lv3;
+  unsigned long int lvol = lat->lvol;
+  unsigned long int lv3 = lat->lv3;
   int lt = lat->ldims[0];
   int t0 = lat->ldims[0]*lat->comms->proc_coords[0];
 
 #ifdef QHG_OMP
 #pragma omp parallel for
 #endif
-  for(int v=0; v<lvol; v++) {
+  for(unsigned long int v=0; v<lvol; v++) {
     _Complex double U[NS*NC][NS*NC];
     _Complex double D[NS*NC][NS*NC];    
     _Complex double C[NS*NC][NS*NC];    
@@ -51,7 +51,7 @@ qhg_nucleons(qhg_spinor_field sp_u[NS*NC], qhg_spinor_field sp_d[NS*NC], int sou
     prop_load(U, sp_u, v);
     prop_load(D, sp_d, v);    
 
-    int t = v/lv3;
+    int t = (int)(v/lv3);
     int gt = t + t0;
     if(gt < tsrc) {
       prop_bc(sp_u[0].bc, U);

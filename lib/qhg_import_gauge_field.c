@@ -9,7 +9,7 @@
 void
 qhg_import_gauge_field(qhg_gauge_field gf, _Complex double *ptr)
 {
-  int lvol = gf.lat->lvol;
+  unsigned long int lvol = gf.lat->lvol;
   memcpy(gf.field, ptr, sizeof(_Complex double)*NC*NC*ND*lvol);
   return;
 }

@@ -54,11 +54,11 @@ handle_ildg_binary_data(LimeReader *reader)
   n_uint64_t bytes_in_record = limeReaderBytes(reader);
   n_uint64_t expected_bytes =
     (n_uint64_t)(conf_info.precision/8) *
-    conf_info.dims[0] *
-    conf_info.dims[1] *
-    conf_info.dims[2] *
-    conf_info.dims[3] *
-    NC * NC * ND * 2;
+    (n_uint64_t)conf_info.dims[0] *
+    (n_uint64_t)conf_info.dims[1] *
+    (n_uint64_t)conf_info.dims[2] *
+    (n_uint64_t)conf_info.dims[3] *
+    (n_uint64_t)(NC * NC * ND * 2);
   if(expected_bytes != bytes_in_record) {
     fprintf(stderr, "expected %llu bytes in ildg-binary-data, got %llu\n",
 	    expected_bytes, bytes_in_record);
@@ -141,7 +141,7 @@ qhg_read_gauge_field_ildg(qhg_gauge_field g, char fname[])
   limeDestroyReader(reader);
   fclose(fp);
 
-  int elem_bytes = conf_info.precision == 32 ? 4 : 8;
+  size_t elem_bytes = conf_info.precision == 32 ? 4 : 8;
   MPI_Datatype dtype = elem_bytes == 4 ? MPI_FLOAT : MPI_DOUBLE;
   MPI_Datatype elemtype, filetype;
   get_file_types(&elemtype, &filetype, dtype, lat);
@@ -154,13 +154,12 @@ qhg_read_gauge_field_ildg(qhg_gauge_field g, char fname[])
     }
     MPI_Abort(MPI_COMM_WORLD, -2);
   }
-  MPI_File_set_size(fhandle, 0); 
-  MPI_File_set_view(fhandle, conf_info.binary_data_offset, elemtype,
+  MPI_File_set_view(fhandle, (MPI_Offset)conf_info.binary_data_offset, elemtype,
 		    filetype, "native", MPI_INFO_NULL);
 
-  int lvol = lat->lvol;
+  unsigned long int lvol = lat->lvol;
   void *buffer = qhg_alloc(lvol*2*elem_bytes*NC*NC*ND);
-  MPI_File_read_all(fhandle, buffer, lvol, elemtype, MPI_STATUS_IGNORE);
+  MPI_File_read_all(fhandle, buffer, (int)lvol, elemtype, MPI_STATUS_IGNORE);
   if(!qhg_is_bigendian()) {
     if(elem_bytes == 4) {
       qhg_byte_swap_float(buffer, lvol*NC*NC*ND*2);
@@ -169,7 +168,7 @@ qhg_read_gauge_field_ildg(qhg_gauge_field g, char fname[])
     }
   }
   
-  for(int v0=0; v0<lvol; v0++) {
+  for(unsigned long int v0=0; v0<lvol; v0++) {
     int *ldims0 = lat->ldims;    
     int co0[] = CO(v0, ldims0);
     int co1[] = {
@@ -178,13 +177,16 @@ qhg_read_gauge_field_ildg(qhg_gauge_field g, char fname[])
     int ldims1[] = {
       ldims0[0], ldims0[3], ldims0[2], ldims0[1]
     };    
-    int v1 = IDX(co1, ldims1);
+    unsigned long int v1 = IDX(co1, ldims1);
     int mu[] = {3, 0, 1, 2};
     for(int d=0; d<ND; d++) 
       for(int c0=0; c0<NC; c0++)
 	for(int c1=0; c1<NC; c1++) {
-	  int x0 = c1 + NC*(c0 + NC*(d + v0*ND));
-	  int x1 = c1 + NC*(c0 + NC*(mu[d] + v1*ND));
+	  unsigned long int x0 = (unsigned long int)c1 +
+	    NC*((unsigned long int)c0 +
+		NC*((unsigned long int)d + (unsigned long int)v0*ND));
+	  unsigned long int x1 = (unsigned long int)c1 +
+	    NC*((unsigned long int)c0 + NC*((unsigned long int)mu[d] + (unsigned long int)v1*ND));
 	  double re, im;
 	  if(elem_bytes == 4) {
 	    re = ((float *) buffer)[x1*2 + 0];

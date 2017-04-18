@@ -9,7 +9,7 @@
 #include <qhg_prop_trace.h>
 
 static void
-prop_load(_Complex double A[NC*NS][NC*NS], qhg_spinor_field s[NC*NS], int v)
+prop_load(_Complex double A[NC*NS][NC*NS], qhg_spinor_field s[NC*NS], unsigned long int v)
 {
   for(int cs0=0; cs0<NS*NC; cs0++)
     for(int cs1=0; cs1<NS*NC; cs1++) {
@@ -59,7 +59,7 @@ prop_meq_g(_Complex double A[NC*NS][NC*NS], _Complex double B[NC*NS][NC*NS])
 }
 
 static void
-prop_store(qhg_spinor_field s[NC*NS], int v, _Complex double A[NC*NS][NC*NS])
+prop_store(qhg_spinor_field s[NC*NS], unsigned long int v, _Complex double A[NC*NS][NC*NS])
 {
   for(int cs0=0; cs0<NS*NC; cs0++)
     for(int cs1=0; cs1<NS*NC; cs1++) {

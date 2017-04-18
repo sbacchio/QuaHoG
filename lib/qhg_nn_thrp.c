@@ -35,14 +35,14 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
 {  
   qhg_lattice *lat = fwd[0].lat;
   qhg_correlator corr = qhg_correlator_init(SITE_SIZE, lat);
-  int lvol = lat->lvol;
-  int **nn = lat->nn;
+  unsigned long int lvol = lat->lvol;
+  unsigned long int **nn = lat->nn;
   for(int i=0; i<ND; i++)
     corr.origin[i] = source_coords[i];
   int Lt = lat->dims[0];
   int tsrc = corr.origin[0];
   int tsnk = (corr.origin[0] + thrp_sink.dt) % Lt;  
-  int lv3 = lat->lv3;
+  unsigned long int lv3 = lat->lv3;
   int lt = lat->ldims[0];
   int t0 = lat->ldims[0]*lat->comms->proc_coords[0];  
   
@@ -54,18 +54,18 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
 #ifdef QHG_OMP
 #pragma omp parallel for
 #endif
-  for(int v=0; v<lvol; v++) {
+  for(unsigned long int v=0; v<lvol; v++) {
     _Complex double F[NS*NC][NS*NC];
     _Complex double B[NS*NC][NS*NC];
     _Complex double T[NS*NC][NS*NC];
     prop_load(F, fwd, v);
     prop_load(B, bwd, v);
 
-    if(t0 + v/lv3 < tsrc) {
+    if(t0 + (v/lv3) < tsrc) {
       prop_bc(fwd[0].bc, F);
     }
 
-    if(t0 + v/lv3 > tsnk) {
+    if(t0 + (v/lv3) > tsnk) {
       prop_bc(bwd[0].bc, B);
     }
     
@@ -149,8 +149,8 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       _Complex double A2[NS*NC][NS*NC];
       _Complex double A3[NS*NC][NS*NC];
       int mu = i - NLOC;
-      int vp = nn[mu][v];
-      int vm = nn[mu+ND][v];
+      unsigned long int vp = nn[mu][v];
+      unsigned long int vm = nn[mu+ND][v];
       
       _Complex double U0[NC][NC];
       _Complex double Um[NC][NC];
@@ -162,24 +162,24 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(BP, bwd, vp);
       prop_load(BM, bwd, vm);
 
-      if(t0 + v/lv3 < tsrc) {
+      if(t0 + (v/lv3) < tsrc) {
 	prop_bc(fwd[0].bc, FP);
 	prop_bc(fwd[0].bc, FM);
       }
       
-      if(t0 + v/lv3 > tsnk) {
+      if(t0 + (v/lv3) > tsnk) {
 	prop_bc(bwd[0].bc, BP);
 	prop_bc(bwd[0].bc, BM);
       }
 
       if(mu == 0) {
-	if(t0 + v/lv3 == Lt-1) {
+	if(t0 + (v/lv3) == Lt-1) {
 	  prop_bc(bwd[0].bc, BP); /* This negates the previous flipping of BP's sign */
 	  prop_bc(fwd[0].bc, FP); /* This catches the case when v is
 				     on the right side of the lattice,
 				     but vp is over the edge */
 	}	
-	if(t0 + v/lv3 == 0) {
+	if(t0 + (v/lv3) == 0) {
 	  prop_bc(fwd[0].bc, FM); /* This negates the previous flipping of FM's sign */
 	  prop_bc(bwd[0].bc, BM); /* This catches the case when v is
 				     on the right side of the lattice,
@@ -245,8 +245,8 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       _Complex double A2[NS*NC][NS*NC];
       _Complex double A3[NS*NC][NS*NC];
       
-      int vp = nn[mu][v];
-      int vm = nn[mu+ND][v];
+      unsigned long int vp = nn[mu][v];
+      unsigned long int vm = nn[mu+ND][v];
       
       _Complex double U0[NC][NC];
       _Complex double Um[NC][NC];
@@ -258,24 +258,24 @@ qhg_nn_thrp(qhg_spinor_field fwd[NS*NC], qhg_spinor_field bwd[NS*NC], qhg_gauge_
       prop_load(BP, bwd, vp);
       prop_load(BM, bwd, vm);      
 
-      if(t0 + v/lv3 < tsrc) {
+      if(t0 + (v/lv3) < tsrc) {
 	prop_bc(fwd[0].bc, FP);
 	prop_bc(fwd[0].bc, FM);
       }
       
-      if(t0 + v/lv3 > tsnk) {
+      if(t0 + (v/lv3) > tsnk) {
 	prop_bc(bwd[0].bc, BP);
 	prop_bc(bwd[0].bc, BM);
       }
 
       if(mu == 0) {
-	if(t0 + v/lv3 == Lt-1) {
+	if(t0 + (v/lv3) == Lt-1) {
 	  prop_bc(bwd[0].bc, BP); /* This negates the previous flipping of BP's sign */
 	  prop_bc(fwd[0].bc, FP); /* This catches the case when v is
 				     on the right side of the lattice,
 				     but vp is over the edge */
 	}	
-	if(t0 + v/lv3 == 0) {
+	if(t0 + (v/lv3) == 0) {
 	  prop_bc(fwd[0].bc, FM); /* This negates the previous flipping of FM's sign */
 	  prop_bc(bwd[0].bc, BM); /* This catches the case when v is
 				     on the right side of the lattice,

@@ -9,10 +9,10 @@
 qhg_gauge_field
 qhg_gauge_field_init(qhg_lattice *lat)
 {
-  int lvol = lat->lvol;
-  int *bvol = lat->bvol;
-  int (*evol)[ND] = lat->evol;  
-  int ext_vol = lvol;
+  unsigned long int lvol = lat->lvol;
+  unsigned long int *bvol = lat->bvol;
+  unsigned long int (*evol)[ND] = lat->evol;  
+  unsigned long int ext_vol = lvol;
   for(int i=0; i<ND; i++) {
     ext_vol += 2*bvol[i];    
     for(int j=i+1; j<ND; j++)
@@ -22,7 +22,7 @@ qhg_gauge_field_init(qhg_lattice *lat)
   qhg_gauge_field gf;
   gf.field = qhg_alloc(ext_vol*NC*NC*ND*sizeof(_Complex double));
 
-  int v_offset = lvol;
+  unsigned long int v_offset = lvol;
   for(int d0=0; d0<ND; d0++)
     for(int s0=0; s0<2; s0++)    
       if(bvol[d0] != 0) {

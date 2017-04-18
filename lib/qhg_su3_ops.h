@@ -9,7 +9,7 @@
 #define GVMC(v, m, a, b) (b + NC*(a + NC*(m + ND*v)))
 
 static void
-su3_load(_Complex double A[NC][NC], qhg_gauge_field g, int v, int mu)
+su3_load(_Complex double A[NC][NC], qhg_gauge_field g, unsigned long int v, int mu)
 {
   for(int c0=0; c0<NC; c0++)
     for(int c1=0; c1<NC; c1++) {

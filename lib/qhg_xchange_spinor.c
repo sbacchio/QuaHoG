@@ -14,7 +14,7 @@ get_boundary(_Complex double *bnd, int dir, _Complex double *field, qhg_lattice 
 {
   int sign = dir / ND == 0 ? +1 : -1;
   dir = dir % ND;
-  int bvol = lat->bvol[dir];
+  unsigned long int bvol = lat->bvol[dir];
   int *ldims = lat->ldims;
   int *procs = lat->comms->proc_dims;
   if(procs[dir] > 1) {

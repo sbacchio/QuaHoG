@@ -46,16 +46,16 @@ qhg_read_spinors(qhg_spinor_field psi[], int n_spinors, char fname[])
   MPI_File_set_size(fhandle, 0); 
   MPI_File_set_view(fhandle, 0, elemtype, filetype, "native", MPI_INFO_NULL);
   
-  int lvol = lat->lvol;
+  unsigned long int lvol = lat->lvol;
   float *buffer = qhg_alloc(lvol*2*sizeof(float)*NC*NS);
   for(int i_sp=0; i_sp<n_spinors; i_sp++) {
-    MPI_File_read_all(fhandle, buffer, lvol, elemtype, MPI_STATUS_IGNORE);
+    MPI_File_read_all(fhandle, buffer, (int)lvol, elemtype, MPI_STATUS_IGNORE);
     if(!qhg_is_bigendian())
       qhg_byte_swap_float(buffer, lvol*NC*NS*2);
     
-    for(int v=0; v<lvol; v++)
+    for(unsigned long int v=0; v<lvol; v++)
       for(int sp=0; sp<NC*NS; sp++) {
-	int x = (v*NC*NS + sp);
+	unsigned long int x = (v*NC*NS + sp);
 	double re = buffer[x*2 + 0];
 	double im = buffer[x*2 + 1];
 	psi[i_sp].field[x] = re + _Complex_I*im;
@@ -84,12 +84,12 @@ qhg_write_spinors(char fname[], int n_spinors, qhg_spinor_field psi[])
   MPI_File_set_size(fhandle, 0); 
   MPI_File_set_view(fhandle, 0, elemtype, filetype, "native", MPI_INFO_NULL);
 
-  int lvol = lat->lvol;
+  unsigned long int lvol = lat->lvol;
   float *buffer = qhg_alloc(lvol*2*sizeof(float)*NC*NS);
   for(int i_sp=0; i_sp<n_spinors; i_sp++) {
-    for(int v=0; v<lvol; v++)
+    for(unsigned long int v=0; v<lvol; v++)
       for(int sp=0; sp<NC*NS; sp++) {
-	int x = (v*NC*NS + sp);
+	unsigned long int x = (v*NC*NS + sp);
 	buffer[x*2 + 0] = creal(psi[i_sp].field[x]);
 	buffer[x*2 + 1] = cimag(psi[i_sp].field[x]);
       }
@@ -97,7 +97,7 @@ qhg_write_spinors(char fname[], int n_spinors, qhg_spinor_field psi[])
     if(!qhg_is_bigendian())
       qhg_byte_swap_float(buffer, lvol*NC*NS*2);
     
-    MPI_File_write_all(fhandle, buffer, lvol, elemtype, MPI_STATUS_IGNORE);
+    MPI_File_write_all(fhandle, buffer, (int)lvol, elemtype, MPI_STATUS_IGNORE);
   }
   free(buffer);    
 

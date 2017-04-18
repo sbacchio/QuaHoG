@@ -20,8 +20,8 @@ qhg_write_mesons(char fname[], qhg_correlator corr, char group[])
   qhg_lattice *lat = corr.lat;
   int proc_id = lat->comms->proc_id;
   int am_io_proc = proc_id == 0 ? 1 : 0;
-  int site_size = corr.site_size;
-  int lvol = lat->lvol;
+  size_t site_size = corr.site_size;
+  unsigned long int lvol = lat->lvol;
   int *pd = lat->comms->proc_dims;
   int *pc = lat->comms->proc_coords;
   int np = lat->comms->nprocs;
@@ -52,7 +52,7 @@ qhg_write_mesons(char fname[], qhg_correlator corr, char group[])
     asprintf(&group_tag, "%s", flav_tags[iflav]);
     hid_t group1_id = H5Gcreate(top_id, group_tag, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for(int igamma=0; igamma<NGAMMAS; igamma++) {
-      for(int v=0; v<lvol; v++) {
+      for(unsigned long int v=0; v<lvol; v++) {
 	buf[0 + 2*v] = creal(corr.C[VGF(v, igamma, iflav)]);
 	buf[1 + 2*v] = cimag(corr.C[VGF(v, igamma, iflav)]);
       }

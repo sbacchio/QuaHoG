@@ -19,9 +19,9 @@ qhg_gauss_smear_iter(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field 
 #endif
 
   double norm = 1.0/(1.0 + 6.0*alpha);
-  int vol = in.lat->vol;
-  int lvol = in.lat->lvol;
-  int **nn = in.lat->nn;
+  unsigned long int vol = in.lat->vol;
+  unsigned long int lvol = in.lat->lvol;
+  unsigned long int **nn = in.lat->nn;
     
 #ifdef QHG_OMP
 #pragma omp single
@@ -40,12 +40,12 @@ qhg_gauss_smear_iter(qhg_spinor_field out, qhg_spinor_field in, qhg_gauge_field 
 #ifdef QHG_OMP
 #pragma omp for
 #endif
-  for(int v0=0; v0<lvol; v0++) {
+  for(unsigned long int v0=0; v0<lvol; v0++) {
     _Complex double *s = &psi[S(v0)];
     spinor_linalg_zero(s);
     for(int mu=1; mu<ND; mu++) {
-      int vp = nn[mu][v0];
-      int vm = nn[mu+ND][v0];
+      unsigned long int vp = nn[mu][v0];
+      unsigned long int vm = nn[mu+ND][v0];
       _Complex double *p;
       _Complex double *u;
 

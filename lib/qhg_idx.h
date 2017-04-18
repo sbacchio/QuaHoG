@@ -29,12 +29,17 @@
  * Returns single index of coordinates {co[0], co[1], co[2], co[3]}
  * when dimensions are {d[0], d[1], d[2], d[3]}
  */
-#define IDX(co,d) (co[3] + d[3]*(co[2] + d[2]*(co[1] + d[1]*co[0])));
+#define IDX(co,d) ((unsigned long int)co[3] +				\
+		   (unsigned long int)d[3]*((unsigned long int)co[2] +	\
+					    (unsigned long int)d[2]*((unsigned long int)co[1] + \
+								     (unsigned long int)d[1]*(unsigned long int)co[0])))
 
 /*
  * Same as above but for three dimensions
  * 
  */
-#define IDX3(co,d) (co[2] + d[2]*(co[1] + d[1]*co[0]))
+#define IDX3(co,d) ((unsigned long int)co[2] + \
+		    (unsigned long int)d[2]*((unsigned long int)co[1] + \
+					     (unsigned long int)d[1]*(unsigned long int)co[0]))
 
 #endif /* _QHG_IDX_H */

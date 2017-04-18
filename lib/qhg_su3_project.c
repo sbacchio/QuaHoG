@@ -52,7 +52,7 @@ typedef struct {
 */
 
 void
-qhg_su3_project(_Complex double *u, int n)
+qhg_su3_project(_Complex double *u, unsigned long int n)
 {
   qcd_complex_16 H[3][3],detM,U[3][3],M[3][3];
   qcd_complex_16 b,D,v[3][3],vr[3][3];
@@ -75,7 +75,7 @@ qhg_su3_project(_Complex double *u, int n)
    ThirdRoot_18 =pow(18.,1./3.);
    ThirdRoot_2_3=pow((2./3.),1./3.);
 
-   for(int i=0; i<n; i++) {
+   for(unsigned long int i=0; i<n; i++) {
      for(int c1=0; c1<3; c1++)
        for(int c2=0; c2<3; c2++)
          M[c1][c2] = (qcd_complex_16){creal(u[i*NC*NC + c1*NC + c2]),

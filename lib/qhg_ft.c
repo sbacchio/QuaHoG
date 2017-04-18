@@ -50,8 +50,8 @@ qhg_ft(qhg_correlator corr_x, qhg_mom_list *mom_list, char direction[])
   int z0 = corr_x.origin[3];  
 
   int *pdims = lat->comms->proc_dims;
-  int lvol = lat->lvol;
-  int site_size = corr_x.site_size;  
+  unsigned long int lvol = lat->lvol;
+  size_t site_size = corr_x.site_size;  
 
   qhg_correlator corr_p = qhg_correlator_init(site_size, lat);
   memset(corr_p.C, '\0', site_size*lvol*sizeof(_Complex double));
@@ -88,9 +88,9 @@ qhg_ft(qhg_correlator corr_x, qhg_mom_list *mom_list, char direction[])
 	  ph = ph*2*M_PI;
 	  _Complex double ex = cos(ph) + sign * _Complex_I * sin(ph);
 	  for(int t=0; t<lt; t++) {
-	    int co[] = {t,x,y,z};
-	    int v = IDX(co, ldims);
-	    for(int s=0; s<site_size; s++)
+	    unsigned long int co[] = {t,x,y,z};
+	    unsigned long int v = IDX(co, ldims);
+	    for(unsigned long int s=0; s<site_size; s++)
 	      ftacc[t*site_size + s] += ex*corr_x.C[v*site_size + s];
 	  }
 	}
@@ -107,11 +107,13 @@ qhg_ft(qhg_correlator corr_x, qhg_mom_list *mom_list, char direction[])
 
     /* Local coords of kx, ky, kz */
     int kco[] = {kx % lx, ky % ly, kz % lz};
-    int vk = kco[2] + lz*(kco[1] + ly*kco[0]);
-    int lv3 = lat->lv3;
+    unsigned long int vk = (unsigned long int)kco[2] +
+      (unsigned long int)lz*((unsigned long int)kco[1] +
+			     (unsigned long int)ly*(unsigned long int)kco[0]);
+    unsigned long int lv3 = lat->lv3;
     if(s_proc_id == x_proc_id)
-      for(int t=0; t<lt; t++)
-	for(int s=0; s<site_size; s++)
+      for(unsigned long int t=0; t<lt; t++)
+	for(unsigned long int s=0; s<site_size; s++)
 	  corr_p.C[(t*lv3 + vk)*site_size + s] = recv[t*site_size + s];
   }
 

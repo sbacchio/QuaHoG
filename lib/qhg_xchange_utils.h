@@ -17,23 +17,23 @@ get_slice(int ndims, int dims[], int dir, int slice, size_t site_size)
   MPI_Type_contiguous(site_size, MPI_BYTE, &elem);
   MPI_Type_commit(&elem);
 
-  int vol = 1;
+  unsigned long int vol = 1;
   for(int i=0; i<ND; i++)
-    vol *= dims[i];
+    vol *= (unsigned long int)dims[i];
   
-  int nelems = 1;
+  unsigned long int nelems = 1;
   for(int i=ndims-1; i>dir; i--)
-    nelems *= dims[i];
+    nelems *= (unsigned long int)dims[i];
 
-  int count = vol/nelems/dims[dir];
+  int count = (int)(vol/nelems/(unsigned long int)dims[dir]);
   
-  int stride = dims[dir]*nelems;
-  int offset = slice*nelems;
+  unsigned long int stride = (unsigned long int)dims[dir]*nelems;
+  unsigned long int offset = (unsigned long int)slice*nelems;
   int *nelem_arr = qhg_alloc(sizeof(int)*count);
   int *displ_arr = qhg_alloc(sizeof(int)*count);
   for(int i=0; i<count; i++) {
-    nelem_arr[i] = nelems;
-    displ_arr[i] = offset + i*stride;
+    nelem_arr[i] = (int)nelems;
+    displ_arr[i] = (int)(offset + i*stride);
   }
 
   MPI_Datatype slice_type;

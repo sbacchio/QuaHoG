@@ -12,8 +12,8 @@ qhg_nn_sequential_sink_u(qhg_spinor_field out[], qhg_spinor_field in_up[], qhg_s
   int *proc_coords = lat->comms->proc_coords;
   int *dims = lat->dims;
   int lt = lat->ldims[0];  
-  int lvol = lat->lvol;
-  int lv3 = lat->lv3;
+  unsigned long int lvol = lat->lvol;
+  unsigned long int lv3 = lat->lv3;
 
   /* Only loop along appropriate sink time-slice */
   int dt = thrp_params.dt;
@@ -21,10 +21,10 @@ qhg_nn_sequential_sink_u(qhg_spinor_field out[], qhg_spinor_field in_up[], qhg_s
   int ts = (t0+dt) % dims[0];
   int t_rank = ts / lt;
   int ts_loc = ts % lt;
-  int v0, v1;
+  unsigned long int v0, v1;
   if(proc_coords[0] == t_rank) {
-    v0 = lv3*ts_loc;
-    v1 = lv3*(ts_loc+1);
+    v0 = lv3*(unsigned long int)ts_loc;
+    v1 = lv3*(unsigned long int)(ts_loc+1);
   } else {
     v0 = 0; /* Do nothing */
     v1 = 0;
@@ -34,7 +34,7 @@ qhg_nn_sequential_sink_u(qhg_spinor_field out[], qhg_spinor_field in_up[], qhg_s
   _Complex double one[NC*NS][NC*NS];
   prop_zero(zero);
   prop_eye(one);
-  for(int v=0; v<lvol; v++)
+  for(unsigned long int v=0; v<lvol; v++)
     prop_store(out, v, zero);
   
   _Complex double P[NS*NC][NS*NC];
@@ -56,7 +56,7 @@ qhg_nn_sequential_sink_u(qhg_spinor_field out[], qhg_spinor_field in_up[], qhg_s
     break;
   }
   
-  for(int v=v0; v<v1; v++) {
+  for(unsigned long int v=v0; v<v1; v++) {
     /* U is in_up[], D is in_dn[], A0, B0, A1, B1, X are auxiliary, Y is
        out[]. */
     _Complex double U[NS*NC][NS*NC];
@@ -129,8 +129,8 @@ qhg_nn_sequential_sink_d(qhg_spinor_field out[], qhg_spinor_field in[], int t0, 
   int *proc_coords = lat->comms->proc_coords;
   int *dims = lat->dims;
   int lt = lat->ldims[0];  
-  int lvol = lat->lvol;
-  int lv3 = lat->lv3;
+  unsigned long int lvol = lat->lvol;
+  unsigned long int lv3 = lat->lv3;
 
   /* Only loop along appropriate sink time-slice */
   int dt = thrp_params.dt;
@@ -138,10 +138,10 @@ qhg_nn_sequential_sink_d(qhg_spinor_field out[], qhg_spinor_field in[], int t0, 
   int ts = (t0+dt) % dims[0];
   int t_rank = ts / lt;
   int ts_loc = ts % lt;
-  int v0, v1;
+  unsigned long int v0, v1;
   if(proc_coords[0] == t_rank) {
-    v0 = lv3*ts_loc;
-    v1 = lv3*(ts_loc+1);
+    v0 = lv3*(unsigned long int)ts_loc;
+    v1 = lv3*(unsigned long int)(ts_loc+1);
   } else {
     v0 = 0; /* Do nothing */
     v1 = 0;
@@ -149,10 +149,10 @@ qhg_nn_sequential_sink_d(qhg_spinor_field out[], qhg_spinor_field in[], int t0, 
 
   _Complex double zero[NC*NS][NC*NS];
   prop_zero(zero);
-  for(int v=0; v<lvol; v++)
+  for(unsigned long int v=0; v<lvol; v++)
     prop_store(out, v, zero);
   
-  for(int v=v0; v<v1; v++) {
+  for(unsigned long int v=v0; v<v1; v++) {
     /* X is in[], Y is out[], A, B are auxiliary */
     _Complex double X[NS*NC][NS*NC];
     _Complex double Y[NS*NC][NS*NC];
