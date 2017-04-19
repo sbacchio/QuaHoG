@@ -2,6 +2,7 @@
 #define _QHG_TYPES_H 1
 
 #include <mpi.h>
+#include <stdlib.h>
 #include <qhg_defs.h>
 
 enum qhg_fermion_bc_time {
