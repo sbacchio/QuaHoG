@@ -55,6 +55,27 @@ typedef struct {
 } qhg_spinor_field;
 
 typedef struct {
+  afloat *((*field)[NS][NS][NC][NC][2]);
+  afloat *alloc;
+  enum qhg_fermion_bc_time bc;
+  qhg_lattice *lat;
+} qhg_fast_spinor_field;
+
+typedef struct {
+  double (*C)[NS][NS][NS][NS][2];
+  qhg_lattice *lat;  
+  int tsrc;  
+  int write;  
+} qhg_mesons_open_correlator;
+
+typedef struct {
+  double (*C)[NS][NS][NS][NS][NS][NS][2];
+  qhg_lattice *lat;  
+  int tsrc;  
+  int write;  
+} qhg_baryons_open_correlator;
+
+typedef struct {
   int (*mom_vecs)[3];
   int n_mom_vecs;
   int max_mom_sq;
@@ -69,6 +90,7 @@ typedef struct {
   qhg_mom_list *mom_list;
   qhg_lattice *lat;  
 } qhg_correlator;
+  
 
 enum projector {
   P0,
