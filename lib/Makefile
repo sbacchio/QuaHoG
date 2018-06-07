@@ -14,6 +14,7 @@ endif
 
 all: libqhg.a
 
+#CFLAGS += -qopt-report=1 -I./
 CFLAGS += -I./
 SOURCES=\
 	qhg_lattice			\
@@ -22,6 +23,9 @@ SOURCES=\
 	qhg_stop_watch			\
 	qhg_gauge_field			\
 	qhg_spinor_field		\
+	qhg_fast_spinor_field		\
+	qhg_fast_mesons			\
+	qhg_fast_baryons		\
 	qhg_correlator			\
 	qhg_xchange_gauge		\
 	qhg_xchange_spinor		\
@@ -62,6 +66,10 @@ libqhg.a: ${addsuffix .o, $(SOURCES)}
 	$(E) CC $<
 	$(C)$(CC) $(CFLAGS) -c $< -o $@
 	$(C)$(CC) -M $(CFLAGS) -c $< > $*.d
+
+%.optrpt: %.c
+	$(E) CC-report $<
+	$(C)$(CC) $(CFLAGS) -qopt-report=3 -c $< 
 
 clean:
 	$(E) CLEAN in $(PWD)
