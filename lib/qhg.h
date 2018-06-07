@@ -26,6 +26,9 @@
 #include <qhg_write_mesons_udsc.h>
 #include <qhg_nucleons.h>
 #include <qhg_write_nucleons.h>
+#include <qhg_fast_spinor_field.h>
+#include <qhg_fast_mesons.h>
+#include <qhg_fast_baryons.h>
 #include <qhg_spinor_field_io.h>
 #include <qhg_spinor_field_bc.h>
 #include <qhg_spinor_field_linalg.h>
